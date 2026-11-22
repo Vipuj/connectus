@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connectus brand and design spec</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,&lt;svg xmlns=&#x27;http://www.w3.org/2000/svg&#x27; viewBox=&#x27;0 0 64 64&#x27; width=&#x27;64&#x27; height=&#x27;64&#x27; fill=&#x27;none&#x27;&gt;&lt;rect width=&#x27;64&#x27; height=&#x27;64&#x27; fill=&#x27;%23251911&#x27;/&gt;&lt;g transform=&#x27;translate(32 32) rotate(-45) scale(.74) translate(-32 -32)&#x27; stroke-width=&#x27;11&#x27;&gt;&lt;rect x=&#x27;8&#x27; y=&#x27;19&#x27; width=&#x27;30&#x27; height=&#x27;26&#x27; rx=&#x27;13&#x27; stroke=&#x27;%23fef9ef&#x27;/&gt;&lt;rect x=&#x27;26&#x27; y=&#x27;19&#x27; width=&#x27;30&#x27; height=&#x27;26&#x27; rx=&#x27;13&#x27; stroke=&#x27;%23e64706&#x27;/&gt;&lt;path d=&#x27;M25 19A13 13 0 0 1 38 32&#x27; stroke=&#x27;%23fef9ef&#x27;/&gt;&lt;/g&gt;&lt;/svg&gt;">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap">
+<style>
+:root{color-scheme:light;--paper:#f8efe0;--ink:#251911;--ink2:#5b4c43;--crimson:#9f3045;--orange:#e64706;--border:#c9bba9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink2);font:300 17px/1.65 "Plus Jakarta Sans",system-ui,sans-serif}
+main{max-width:1080px;margin:0 auto;padding:0 24px 120px}
+header{padding:72px 0 56px;border-bottom:1px solid var(--border)}
+h1{margin:24px 0 0;font-size:clamp(48px,9vw,104px);font-weight:800;letter-spacing:-.05em;line-height:.92;color:var(--ink)}
+h2{margin:0 0 20px;font-size:clamp(32px,5vw,52px);font-weight:800;letter-spacing:-.05em;line-height:1;color:var(--ink)}
+h3{margin:32px 0 10px;font-size:20px;font-weight:600;color:var(--ink)}
+section{padding:72px 0 0}
+p{max-width:68ch;margin:0 0 14px}
+.lb{font-size:13px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.tile{display:flex;align-items:center;justify-content:center;min-height:220px;border:1px solid var(--ink)}
+.wm{font-weight:800;letter-spacing:-.05em;line-height:1}
+.lock{display:flex;align-items:center}
+pre{margin:12px 0 24px;background:var(--ink);color:#fef9ef;padding:20px;overflow-x:auto;box-shadow:6px 6px 0 var(--crimson);font:13px/1.55 ui-monospace,Menlo,Consolas,monospace}
+code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.9em}
+p code,td code,li code{background:#fcf5ea;border:1px solid var(--border);padding:1px 5px}
+table{width:100%;border-collapse:collapse;margin:12px 0 24px;font-size:15px}
+th{text-align:left;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.tw{overflow-x:auto}
+.sw{min-height:140px;padding:16px;display:flex;flex-direction:column;gap:2px;justify-content:flex-end;border:1px solid var(--ink);font-size:14px}
+.sw b{font-weight:800;font-size:18px;letter-spacing:-.03em}
+.sw small{opacity:.85;font-size:12px}
+.do li,.dont li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<div class="lb">Brand and design spec, version 1.0</div>
+<h1>connectus</h1>
+<p style="margin-top:24px;font-size:20px">Everything an agent or developer needs to rebuild the Connectus logo, wordmark, favicon, colours and UI style exactly. Every value below is final. Copy the SVG and CSS as given; do not redraw or approximate.</p>
+</header>
+
+<section><h2>1. At a glance</h2>
+<div class="tw"><table>
+<tr><th>Item</th><th>Value</th></tr>
+<tr><td>Product</td><td>Connectus, an app that connects students with their campus, its events and everything around it</td></tr>
+<tr><td>Symbol</td><td>Two interlocked chain links turned 45°. Link 1 is ink, link 2 is orange</td></tr>
+<tr><td>Wordmark</td><td><code>connectus</code>, all lowercase, Plus Jakarta Sans 800, tracking −0.05em, one colour</td></tr>
+<tr><td>Favicon</td><td>Symbol on a solid ink square, cream first link, orange second link, heavier stroke</td></tr>
+<tr><td>Style</td><td>Warm paper, near-black brown ink, flat offset shadows with no blur, sharp corners</td></tr>
+<tr><td>Tone</td><td>Minimal and clean. One accent colour doing one job</td></tr>
+</table></div></section>
+
+<section><h2>2. The symbol</h2>
+<p>Built on a 64 × 64 grid. Two stroked pill-shaped links sit side by side, then the whole pair is rotated −45° about the centre (32, 32) and scaled to 92%. The links interlock: link 2 is drawn over link 1 at the lower crossing, and a short arc of link 1 is redrawn on top at the upper crossing. That redrawn arc is what makes it read as a chain. Never omit it.</p>
+<div class="grid"><div class="tile" style="background:#fcf5ea"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="120" height="120" fill="none"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#251911"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#251911"/></g></svg></div><div class="tile" style="background:#251911"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="120" height="120" fill="none"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#fef9ef"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#fef9ef"/></g></svg></div><div class="tile" style="background:#f4cbc2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="120" height="120" fill="none"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#251911"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#251911"/></g></svg></div></div>
+<h3>Construction values</h3>
+<div class="tw"><table>
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td>viewBox</td><td><code>0 0 64 64</code></td></tr>
+<tr><td>Group transform</td><td><code>translate(32 32) rotate(-45) scale(.92) translate(-32 -32)</code></td></tr>
+<tr><td>Link 1</td><td><code>rect x=8 y=19 width=30 height=26 rx=13</code>, stroke ink, no fill</td></tr>
+<tr><td>Link 2</td><td><code>rect x=26 y=19 width=30 height=26 rx=13</code>, stroke orange, no fill</td></tr>
+<tr><td>Interlock arc</td><td><code>M25 19A13 13 0 0 1 38 32</code>, stroke ink, drawn last</td></tr>
+<tr><td>Stroke width</td><td>8 (in grid units), butt caps, no fill</td></tr>
+<tr><td>Draw order</td><td>link 1, link 2, interlock arc</td></tr>
+<tr><td>Clear space</td><td>25% of the symbol height on every side</td></tr>
+<tr><td>Minimum size</td><td>16 px as the favicon tile; 20 px as the bare symbol</td></tr>
+</table></div>
+<h3>On paper or a tinted panel (link 1 ink)</h3><pre><code>&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 64 64&quot; width=&quot;64&quot; height=&quot;64&quot; fill=&quot;none&quot;&gt;
+  &lt;g transform=&quot;translate(32 32) rotate(-45) scale(.92) translate(-32 -32)&quot; stroke-width=&quot;8&quot;&gt;
+    &lt;rect x=&quot;8&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke=&quot;#251911&quot;/&gt;
+    &lt;rect x=&quot;26&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke=&quot;#e64706&quot;/&gt;
+    &lt;path d=&quot;M25 19A13 13 0 0 1 38 32&quot; stroke=&quot;#251911&quot;/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</code></pre>
+<h3>On ink or any dark surface (link 1 cream)</h3><pre><code>&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 64 64&quot; width=&quot;64&quot; height=&quot;64&quot; fill=&quot;none&quot;&gt;
+  &lt;g transform=&quot;translate(32 32) rotate(-45) scale(.92) translate(-32 -32)&quot; stroke-width=&quot;8&quot;&gt;
+    &lt;rect x=&quot;8&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke=&quot;#fef9ef&quot;/&gt;
+    &lt;rect x=&quot;26&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke=&quot;#e64706&quot;/&gt;
+    &lt;path d=&quot;M25 19A13 13 0 0 1 38 32&quot; stroke=&quot;#fef9ef&quot;/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</code></pre>
+<p>Link 2 is always <code>#e64706</code>. On the tint panel <code>#f4cbc2</code> use the ink version.</p>
+</section>
+
+<section><h2>3. The wordmark</h2>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))"><div class="tile" style="background:#fcf5ea"><div class="lock" style="gap:18px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="73" height="73" fill="none"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#251911"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#251911"/></g></svg><span class="wm" style="font-size:64px;color:#251911">connectus</span></div></div><div class="tile" style="background:#251911"><div class="lock" style="gap:18px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="73" height="73" fill="none"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#fef9ef"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#fef9ef"/></g></svg><span class="wm" style="font-size:64px;color:#fef9ef">connectus</span></div></div><div class="tile" style="background:#f4cbc2"><div class="lock" style="gap:18px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="73" height="73" fill="none"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#251911"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#251911"/></g></svg><span class="wm" style="font-size:64px;color:#251911">connectus</span></div></div></div>
+<div class="tw"><table>
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td>Text</td><td><code>connectus</code>, always lowercase, one word</td></tr>
+<tr><td>Font</td><td>Plus Jakarta Sans (Google Fonts), weight <b>800</b>. Fallback <code>system-ui, sans-serif</code></td></tr>
+<tr><td>Tracking</td><td><code>letter-spacing: -0.05em</code></td></tr>
+<tr><td>Line height</td><td><code>1</code></td></tr>
+<tr><td>Colour</td><td>Ink <code>#251911</code> on light; cream <code>#fef9ef</code> on dark. Never two colours</td></tr>
+<tr><td>Horizontal lockup</td><td>Symbol on the left. Symbol size = <b>1.15 × font size</b>. Gap = <b>0.28 × font size</b>. Vertically centred</td></tr>
+<tr><td>Stacked lockup</td><td>Symbol above, wordmark below, centred, same sizes and gap</td></tr>
+<tr><td>Example at 32 px</td><td>Wordmark 32 px, symbol 37 px, gap 9 px</td></tr>
+<tr><td>Hero use</td><td>Large display only: <code>connect</code> / <code>us</code> on two lines, weight 800, line-height 0.92, with an orange full stop after “us”</td></tr>
+</table></div>
+<h3>Canonical HTML and CSS lockup</h3>
+<pre><code>&lt;a class=&quot;logo&quot; href=&quot;/&quot; aria-label=&quot;Connectus&quot;&gt;
+  &lt;!-- paste the light symbol SVG here, set width and height to 1.15 x font size --&gt;
+  &lt;span class=&quot;logo-word&quot;&gt;connectus&lt;/span&gt;
+&lt;/a&gt;
+
+.logo { display: inline-flex; align-items: center; gap: 0.28em; font-size: 32px; }
+.logo svg { width: 1.15em; height: 1.15em; }
+.logo-word { font: 800 1em/1 &quot;Plus Jakarta Sans&quot;, system-ui, sans-serif; letter-spacing: -0.05em; color: #251911; }</code></pre>
+<h3>React component (copy as is)</h3><pre><code>export function Logo({ variant = &quot;light&quot;, size = 32, wordmark = true }) {
+  const ink = &quot;#251911&quot;, cream = &quot;#fef9ef&quot;, orange = &quot;#e64706&quot;;
+  const a = variant === &quot;dark&quot; ? cream : ink;       // first link + wordmark
+  return (
+    &lt;span style={{ display: &quot;inline-flex&quot;, alignItems: &quot;center&quot;, gap: size * 0.28 }}&gt;
+      &lt;svg viewBox=&quot;0 0 64 64&quot; width={size * 1.15} height={size * 1.15} fill=&quot;none&quot; role=&quot;img&quot; aria-label=&quot;Connectus&quot;&gt;
+        &lt;g transform=&quot;translate(32 32) rotate(-45) scale(.92) translate(-32 -32)&quot; strokeWidth=&quot;8&quot;&gt;
+          &lt;rect x=&quot;8&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke={a} /&gt;
+          &lt;rect x=&quot;26&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke={orange} /&gt;
+          &lt;path d=&quot;M25 19A13 13 0 0 1 38 32&quot; stroke={a} /&gt;
+        &lt;/g&gt;
+      &lt;/svg&gt;
+      {wordmark &amp;&amp; (
+        &lt;span style={{ font: `800 ${size}px/1 &quot;Plus Jakarta Sans&quot;, system-ui, sans-serif`,
+                       letterSpacing: &quot;-0.05em&quot;, color: a }}&gt;connectus&lt;/span&gt;
+      )}
+    &lt;/span&gt;
+  );
+}</code></pre>
+<p>If you need the wordmark as a standalone image, export it from the HTML lockup with the font loaded and convert the text to outlines, so it never depends on the font being installed.</p>
+</section>
+
+<section><h2>4. Favicon and app icons</h2>
+<div class="grid"><div class="tile" style="background:#fcf5ea"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="128" height="128" fill="none"><rect width="128" height="128" fill="#251911"/><g transform="translate(32 32) rotate(-45) scale(.74) translate(-32 -32)" stroke-width="11"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#fef9ef"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#fef9ef"/></g></svg></div><div class="tile" style="background:#fcf5ea"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="48" height="48" fill="none"><rect width="48" height="48" fill="#251911"/><g transform="translate(32 32) rotate(-45) scale(.74) translate(-32 -32)" stroke-width="11"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#fef9ef"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#fef9ef"/></g></svg></div><div class="tile" style="background:#fcf5ea"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="32" height="32" fill="none"><rect width="32" height="32" fill="#251911"/><g transform="translate(32 32) rotate(-45) scale(.74) translate(-32 -32)" stroke-width="11"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#fef9ef"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#fef9ef"/></g></svg></div><div class="tile" style="background:#fcf5ea"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="16" height="16" fill="none"><rect width="16" height="16" fill="#251911"/><g transform="translate(32 32) rotate(-45) scale(.74) translate(-32 -32)" stroke-width="11"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#fef9ef"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#fef9ef"/></g></svg></div></div>
+<p>The favicon is a full-bleed ink square with sharp corners. The symbol is scaled to 74% and its stroke is thickened to 11 so the weave still reads at 16 px. First link cream <code>#fef9ef</code>, second link orange <code>#e64706</code>. This one SVG is the source for every size.</p>
+<h3>favicon.svg</h3><pre><code>&lt;svg xmlns=&quot;http://www.w3.org/2000/svg&quot; viewBox=&quot;0 0 64 64&quot; width=&quot;64&quot; height=&quot;64&quot; fill=&quot;none&quot;&gt;
+&lt;rect width=&quot;64&quot; height=&quot;64&quot; fill=&quot;#251911&quot;/&gt;
+  &lt;g transform=&quot;translate(32 32) rotate(-45) scale(.74) translate(-32 -32)&quot; stroke-width=&quot;11&quot;&gt;
+    &lt;rect x=&quot;8&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke=&quot;#fef9ef&quot;/&gt;
+    &lt;rect x=&quot;26&quot; y=&quot;19&quot; width=&quot;30&quot; height=&quot;26&quot; rx=&quot;13&quot; stroke=&quot;#e64706&quot;/&gt;
+    &lt;path d=&quot;M25 19A13 13 0 0 1 38 32&quot; stroke=&quot;#fef9ef&quot;/&gt;
+  &lt;/g&gt;
+&lt;/svg&gt;</code></pre>
+<h3>Sizes to export</h3>
+<div class="tw"><table>
+<tr><th>File</th><th>Size</th><th>Use</th></tr>
+<tr><td><code>favicon.svg</code></td><td>vector</td><td>modern browsers</td></tr>
+<tr><td><code>favicon.ico</code></td><td>16, 32, 48</td><td>legacy browsers</td></tr>
+<tr><td><code>favicon-32.png</code></td><td>32 × 32</td><td>fallback</td></tr>
+<tr><td><code>apple-touch-icon.png</code></td><td>180 × 180</td><td>iOS home screen</td></tr>
+<tr><td><code>icon-192.png</code>, <code>icon-512.png</code></td><td>192, 512</td><td>Android, PWA</td></tr>
+<tr><td><code>icon-maskable-512.png</code></td><td>512 × 512</td><td>maskable PWA icon</td></tr>
+</table></div>
+<h3>Export commands</h3><pre><code># favicon.svg is the tile SVG above. Render PNGs from it (same file, never redraw):
+rsvg-convert -w 16  favicon.svg -o favicon-16.png
+rsvg-convert -w 32  favicon.svg -o favicon-32.png
+rsvg-convert -w 48  favicon.svg -o favicon-48.png
+rsvg-convert -w 180 favicon.svg -o apple-touch-icon.png
+rsvg-convert -w 192 favicon.svg -o icon-192.png
+rsvg-convert -w 512 favicon.svg -o icon-512.png
+# maskable: the tile is already full-bleed ink and the symbol sits well inside the 80% safe zone
+rsvg-convert -w 512 favicon.svg -o icon-maskable-512.png
+# favicon.ico = 16 + 32 + 48 (ImageMagick)
+magick favicon-16.png favicon-32.png favicon-48.png favicon.ico</code></pre>
+<h3>HTML head tags</h3><pre><code>&lt;link rel=&quot;icon&quot; href=&quot;/favicon.svg&quot; type=&quot;image/svg+xml&quot;&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;/favicon-32.png&quot; sizes=&quot;32x32&quot; type=&quot;image/png&quot;&gt;
+&lt;link rel=&quot;icon&quot; href=&quot;/favicon.ico&quot; sizes=&quot;48x48&quot;&gt;
+&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;/apple-touch-icon.png&quot;&gt;   &lt;!-- 180x180 --&gt;
+&lt;link rel=&quot;manifest&quot; href=&quot;/site.webmanifest&quot;&gt;
+&lt;meta name=&quot;theme-color&quot; content=&quot;#251911&quot;&gt;
+&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.googleapis.com&quot;&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&amp;display=swap&quot;&gt;</code></pre>
+<h3>site.webmanifest</h3><pre><code>{
+  &quot;name&quot;: &quot;Connectus&quot;,
+  &quot;short_name&quot;: &quot;Connectus&quot;,
+  &quot;start_url&quot;: &quot;/&quot;,
+  &quot;display&quot;: &quot;standalone&quot;,
+  &quot;background_color&quot;: &quot;#f8efe0&quot;,
+  &quot;theme_color&quot;: &quot;#251911&quot;,
+  &quot;icons&quot;: [
+    { &quot;src&quot;: &quot;/icon-192.png&quot;, &quot;sizes&quot;: &quot;192x192&quot;, &quot;type&quot;: &quot;image/png&quot; },
+    { &quot;src&quot;: &quot;/icon-512.png&quot;, &quot;sizes&quot;: &quot;512x512&quot;, &quot;type&quot;: &quot;image/png&quot; },
+    { &quot;src&quot;: &quot;/icon-maskable-512.png&quot;, &quot;sizes&quot;: &quot;512x512&quot;, &quot;type&quot;: &quot;image/png&quot;, &quot;purpose&quot;: &quot;maskable&quot; }
+  ]
+}</code></pre>
+</section>
+
+<section><h2>5. Colour</h2>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))"><div class="sw" style="background:#f8efe0;color:#251911"><b>Paper</b><span>#f8efe0</span><span>--paper</span><small>page background</small></div><div class="sw" style="background:#fcf5ea;color:#251911"><b>Paper raised</b><span>#fcf5ea</span><span>--paper-raised</span><small>nav, cards</small></div><div class="sw" style="background:#fef9ef;color:#251911"><b>Input</b><span>#fef9ef</span><span>--paper-input</span><small>inputs, on-dark text</small></div><div class="sw" style="background:#251911;color:#fef9ef"><b>Ink</b><span>#251911</span><span>--ink</span><small>text, logo, dark fills</small></div><div class="sw" style="background:#5b4c43;color:#fef9ef"><b>Ink secondary</b><span>#5b4c43</span><span>--ink-2</span><small>body text, labels</small></div><div class="sw" style="background:#e64706;color:#fef9ef"><b>Orange</b><span>#e64706</span><span>--orange</span><small>second link, CTA shadow</small></div><div class="sw" style="background:#d47b83;color:#251911"><b>Rose</b><span>#d47b83</span><span>--rose</span><small>large display text only</small></div><div class="sw" style="background:#9f3045;color:#fef9ef"><b>Crimson</b><span>#9f3045</span><span>--crimson</span><small>links, hard shadows</small></div><div class="sw" style="background:#f4cbc2;color:#251911"><b>Tint</b><span>#f4cbc2</span><span>--tint</span><small>selected, tinted panels</small></div></div>
+<div class="tw"><table>
+<tr><th>Pair</th><th>Use</th></tr>
+<tr><td>Ink on paper</td><td>All text. Very high contrast</td></tr>
+<tr><td>Ink-2 <code>#5b4c43</code> on paper</td><td>Body text and labels. Passes AA</td></tr>
+<tr><td>Crimson <code>#9f3045</code> on paper (about 6.2:1)</td><td>Small coloured text and links</td></tr>
+<tr><td>Rose <code>#d47b83</code> on paper (about 2.6:1)</td><td>Large decorative display text only. Never anything that must be read</td></tr>
+<tr><td>Orange <code>#e64706</code> on paper</td><td>Logo link, shadows, big accents. Not for body text</td></tr>
+</table></div></section>
+
+<section><h2>6. Type, shape and depth</h2>
+<div class="tw"><table>
+<tr><th>Role</th><th>Spec</th></tr>
+<tr><td>Family</td><td>Plus Jakarta Sans only. No monospace in the UI</td></tr>
+<tr><td>Display and headings</td><td>800, tracking −0.04 to −0.05em, line height 0.92 to 0.95, ink</td></tr>
+<tr><td>Body</td><td>300 at 18 px and above; 400 below 15 px; line height 1.6 to 1.7; ink-2</td></tr>
+<tr><td>Buttons</td><td>600, tracking −0.01em</td></tr>
+<tr><td>Labels and metadata</td><td>600, 12 to 14 px, +0.12 to 0.14em, uppercase</td></tr>
+<tr><td>Rule</td><td>Use only the extremes: very bold headings, very light body. No mid weights for either</td></tr>
+<tr><td>Radius</td><td>0 on buttons, inputs, cards and panels. Circles only for avatars and badges</td></tr>
+<tr><td>Shadows</td><td>Hard offset, zero blur: 4px (rest), 6px (raised), 8px (floating), in crimson. Primary button 5px in orange. Pressed: move onto the shadow and set it to 0</td></tr>
+<tr><td>Forbidden</td><td>Blurred shadows, gradients on UI, glassmorphism, glows, rounded logos</td></tr>
+<tr><td>Spacing</td><td>8 px grid. App screens use 16 to 24 px gaps; marketing pages use 96 to 150 px between sections</td></tr>
+<tr><td>States</td><td>Hover: shadow +2px, element −1px. Focus: 2px ink outline, 2px offset. Disabled: paper fill, dashed <code>#c0b0b0</code> border, no shadow. Error: crimson border and helper text</td></tr>
+</table></div>
+<h3>Drop-in tokens and base CSS</h3><pre><code>:root {
+  /* paper and ink */
+  --paper: #f8efe0;  --paper-raised: #fcf5ea;  --paper-app: #f8f3ea;  --paper-input: #fef9ef;
+  --ink: #251911;    --ink-2: #5b4c43;         --on-ink: #fef9ef;
+  /* brand accents */
+  --orange: #e64706;   /* the second link, primary accent, CTA shadow */
+  --rose: #d47b83;     /* large decorative display text only */
+  --crimson: #9f3045;  /* small coloured text, links, hard shadows */
+  --tint: #f4cbc2;     /* selected rows, tinted panels */
+  --border: #c9bba9;
+  /* type */
+  --font: &quot;Plus Jakarta Sans&quot;, system-ui, sans-serif;
+  /* shape and depth: no blur, no radius */
+  --radius: 0;
+  --shadow-rest: 4px 4px 0 var(--crimson);
+  --shadow-raised: 6px 6px 0 var(--crimson);
+  --shadow-float: 8px 8px 0 var(--crimson);
+  --shadow-cta: 5px 5px 0 var(--orange);
+}
+body { margin: 0; background: var(--paper); color: var(--ink-2); font: 300 16px/1.6 var(--font); }
+h1, h2 { color: var(--ink); font-weight: 800; letter-spacing: -0.05em; line-height: .95; }
+.btn { background: var(--ink); color: var(--on-ink); font: 600 16px/1 var(--font); padding: 18px 24px;
+       border: 0; border-radius: 0; box-shadow: var(--shadow-cta); }
+.btn:active { transform: translate(5px, 5px); box-shadow: 0 0 0 var(--orange); }
+.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.label { font: 600 13px/1 var(--font); letter-spacing: .14em; text-transform: uppercase; }</code></pre></section>
+
+<section><h2>7. Do and don’t</h2>
+<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))">
+<div><h3>Do</h3><ul class="do"><li>Use the SVG exactly as written above</li><li>Keep link 2 orange in every version</li><li>Use the cream first link on dark surfaces</li><li>Keep the interlock arc in every size</li><li>Keep the wordmark in a single colour, lowercase</li><li>Use the ink favicon tile for every icon size</li></ul></div>
+<div><h3>Don’t</h3><ul class="dont"><li>Redraw, trace or re-space the links</li><li>Round the favicon tile or add a shadow to the symbol</li><li>Add gradients, glows or outlines to the logo</li><li>Colour part of the wordmark or capitalise it</li><li>Stretch, rotate or recolour the links</li><li>Put rose or orange text on paper at body sizes</li></ul></div></div></section>
+
+<section><h2>8. Checklist for the agent</h2>
+<ol>
+<li>Load Plus Jakarta Sans at weights 300, 400, 600 and 800.</li>
+<li>Add the token block from section 6 to the app’s global styles.</li>
+<li>Create <code>favicon.svg</code> from section 4, export the PNG and ICO files, and add the head tags and manifest.</li>
+<li>Add the Logo component from section 3 to the header, sign-in screen and splash screen. Use the <code>dark</code> variant on ink surfaces.</li>
+<li>Check that the symbol matches section 2 at 16, 32 and 128 px, including the interlock arc.</li>
+<li>Check that nothing in the UI uses a blurred shadow, a radius or a gradient.</li>
+</ol>
+<h3>Prompt to give your coding agent</h3>
+<pre><code>Implement the Connectus brand from connectus-brand-spec.html exactly.
+Use the SVG code, hex values, font settings and CSS tokens as written; do not redraw
+or approximate anything. Create favicon.svg and every export size, the Logo component,
+the head tags and the manifest. Then apply the tokens to the UI: sharp corners, hard
+offset shadows with no blur, Plus Jakarta Sans 800 headings and 300 body text.
+Work through the checklist in section 8 and report anything you could not match.</code></pre>
+</section>
+</main>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Connectus — College Events, Posters to Alerts in 30s</title>
+    <meta
+      name="description"
+      content="Connectus connects students with campus hackathons, workshops, and fests across India filtered by your campus location, branch, and year."
+    />
+    <meta property="og:title" content="Connectus — College Events, Posters to Alerts in 30s" />
+    <meta
+      property="og:description"
+      content="Connectus connects students with campus hackathons, workshops, and fests across India filtered by your location, campus, branch, and year."
+    />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#f8efe0" />
+    <script>
+      (function () {
+        try {
+          var uid = localStorage.getItem('connectus:active-uid');
+          var pref =
+            (uid && localStorage.getItem('connectus:theme:uid:' + uid)) ||
+            (!uid && localStorage.getItem('connectus:theme:guest')) ||
+            localStorage.getItem('connectus:theme') ||
+            'system';
+          var isDark =
+            pref === 'dark' ||
+            (pref !== 'light' &&
+              window.matchMedia &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var root = document.documentElement;
+          var darkTone = localStorage.getItem('connectus:dark-tone');
+          if (darkTone !== 'black' && darkTone !== 'charcoal' && darkTone !== 'grey') {
+            darkTone = 'charcoal';
+          }
+          root.dataset.dark = darkTone;
+          if (isDark) root.classList.add('dark');
+          root.dataset.theme = pref;
+          root.style.colorScheme = isDark ? 'dark' : 'light';
+          var meta = document.querySelector('meta[name="theme-color"]');
+          var darkHex = darkTone === 'black' ? '#050505' : darkTone === 'grey' ? '#232323' : '#141414';
+          if (meta) meta.setAttribute('content', isDark ? darkHex : '#f8efe0');
+        } catch (e) {}
+      })();
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "name": "Remix Remix Remix connectus",
+  "description": "Poster-first college event discovery and timed alerts for Hyderabad students. Upload any event poster for instant AI field extraction and smart eligibility-filtered notifications.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

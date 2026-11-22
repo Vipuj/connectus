@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Connectus receipt printer</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap">
+<style>
+:root{--bg:#f8efe0;--ink:#251911;--ink2:#5b4c43;--sheet:#fffdf6;--orange:#e64706;--crim:#9f3045;--body:#251911;--on:#fef9ef;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#150e09;--ink:#fef9ef;--ink2:#cbb1a8;--body:#33221a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#150e09;--ink:#fef9ef;--ink2:#cbb1a8;--body:#33221a;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink2);font:300 17px/1.6 "Plus Jakarta Sans",system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px 56px}
+h1{margin:0;font-size:clamp(34px,7vw,56px);font-weight:800;letter-spacing:-.05em;line-height:.95;color:var(--ink);text-align:center}
+p.sub{margin:12px 0 0;text-align:center;max-width:44ch}
+.stage{position:relative;width:min(440px,100%);height:760px;margin-top:36px;overflow:hidden}
+.printer{position:absolute;z-index:3;top:20px;left:0;right:0;height:230px;background:var(--body);box-shadow:8px 8px 0 var(--crim);padding:22px 24px;display:flex;flex-direction:column;justify-content:space-between;color:var(--on)}
+.printer.on{animation:shake .14s linear infinite}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.screen{flex:1;background:#fef9ef;color:#251911;height:62px;padding:0 16px;display:flex;align-items:center;gap:12px;font-weight:600;font-size:16px;letter-spacing:-.01em}
+.led{width:12px;height:12px;background:#9a8a7e;flex:none}
+.on .led{background:var(--orange);animation:blink .5s steps(2) infinite}
+.keys{display:flex;gap:10px}.keys i{width:26px;height:26px;background:var(--orange);display:block}.keys i+i{background:#fef9ef}
+.mouth{height:26px;background:#0d0805;margin:0 -24px -22px;display:flex;align-items:center;justify-content:center}
+.mouth::after{content:"";width:82%;height:8px;background:#000;box-shadow:0 1px 0 #5b4c43}
+.feed{position:absolute;z-index:1;top:244px;left:50%;width:76%;height:520px;margin-left:-38%;overflow:hidden}
+.receipt{background:var(--sheet);color:#251911;padding:26px 24px 34px;transform:translateY(-101%);transform-origin:50% 0;box-shadow:inset 0 0 0 1px #e8dcc8;position:relative;font-variant-numeric:tabular-nums}
+.receipt::after{content:"";position:absolute;left:0;right:0;top:100%;height:10px;background:linear-gradient(-45deg,transparent 5px,var(--sheet) 0) 0 0/10px 10px,linear-gradient(45deg,transparent 5px,var(--sheet) 0) 0 0/10px 10px}
+.receipt.print{animation:print 3.8s steps(64,end) forwards}
+.receipt.drop{animation:drop 1.25s cubic-bezier(.55,0,.9,.55) forwards}
+.receipt.static{transform:none;animation:none}
+.lock{display:flex;align-items:center;gap:8px;justify-content:center}
+.lock b{font-size:28px;font-weight:800;letter-spacing:-.05em;line-height:1}
+.meta{text-align:center;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;margin:10px 0 14px;color:#5b4c43}
+.rule{border-top:2px dashed #c0b0b0;margin:12px 0}
+.row{display:flex;justify-content:space-between;gap:12px;font-size:14.5px;font-weight:400;padding:3px 0}
+.row span:last-child{font-weight:600;white-space:nowrap}
+.total{font-size:20px;font-weight:800;letter-spacing:-.03em}
+.bars{height:46px;margin-top:16px;background:repeating-linear-gradient(90deg,#251911 0 2px,transparent 2px 4px,#251911 4px 5px,transparent 5px 8px,#251911 8px 11px,transparent 11px 12px)}
+.thanks{text-align:center;font-size:13px;margin-top:12px;color:#5b4c43}
+button{margin-top:20px;background:var(--ink);color:var(--bg);font:600 18px/1 "Plus Jakarta Sans",system-ui,sans-serif;padding:20px 28px;border:0;border-radius:0;box-shadow:5px 5px 0 var(--orange);cursor:pointer;transition:transform .12s,box-shadow .12s}
+button:active{transform:translate(5px,5px);box-shadow:0 0 0 var(--orange)}
+button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+@keyframes print{from{transform:translateY(-101%)}to{transform:translateY(0)}}
+@keyframes drop{0%{transform:translateY(0)}14%{transform:translateY(-9px) rotate(-1.2deg)}100%{transform:translateY(620px) rotate(8deg)}}
+@keyframes shake{0%{transform:translateX(0)}50%{transform:translateX(1.5px)}100%{transform:translateX(0)}}
+@keyframes blink{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.printer.on{animation:none}.on .led{animation:none}}
+</style>
+</head>
+<body>
+<h1>connectus</h1>
+<p class="sub">Every event you join prints a receipt. Take it with you.</p>
+
+<div class="stage" aria-hidden="false">
+<div class="printer" id="printer">
+<div class="top">
+<svg viewBox="0 0 64 64" width="46" height="46" fill="none" role="img" aria-label="Connectus"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#fef9ef"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#fef9ef"/></g></svg>
+<div class="keys" aria-hidden="true"><i></i><i></i></div>
+</div>
+<div class="screen" role="status"><span class="led"></span><span id="status">Ready</span></div>
+<div class="mouth"></div>
+</div>
+
+<div class="feed">
+<div class="receipt" id="receipt">
+<div class="lock"><svg viewBox="0 0 64 64" width="32" height="32" fill="none" aria-hidden="true"><g transform="translate(32 32) rotate(-45) scale(.92) translate(-32 -32)" stroke-width="8"><rect x="8" y="19" width="30" height="26" rx="13" stroke="#251911"/><rect x="26" y="19" width="30" height="26" rx="13" stroke="#e64706"/><path d="M25 19A13 13 0 0 1 38 32" stroke="#251911"/></g></svg><b>connectus</b></div>
+<div class="meta">Receipt 0427 · Fri 20 Nov</div>
+<div class="rule"></div>
+<div class="row"><span>Welcome week mixer</span><span>Joined</span></div>
+<div class="row"><span>Hack night, Block C</span><span>Joined</span></div>
+<div class="row"><span>Library study group</span><span>Joined</span></div>
+<div class="row"><span>Campus map saved</span><span>1</span></div>
+<div class="row"><span>New friends made</span><span>12</span></div>
+<div class="rule"></div>
+<div class="row total"><span>Events joined</span><span>3</span></div>
+<div class="bars" role="img" aria-label="Barcode"></div>
+<div class="thanks">See you on campus.</div>
+</div>
+</div>
+</div>
+
+<button type="button" id="again">Print another receipt</button>
+
+<script>
+(function(){
+var rc=document.getElementById('receipt'),pr=document.getElementById('printer'),st=document.getElementById('status'),b=document.getElementById('again'),t;
+var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function run(){
+clearTimeout(t);rc.className='receipt';pr.classList.remove('on');void rc.offsetWidth;
+if(reduce){rc.classList.add('static');st.textContent='Done';return;}
+st.textContent='Printing…';pr.classList.add('on');rc.classList.add('print');
+}
+rc.addEventListener('animationend',function(e){
+if(e.animationName==='print'){pr.classList.remove('on');st.textContent='Done';t=setTimeout(function(){rc.classList.add('drop');st.textContent='Take your receipt';},900);}
+else if(e.animationName==='drop'){st.textContent='Ready';t=setTimeout(run,1400);}
+});
+b.addEventListener('click',run);
+setTimeout(run,500);
+})();
+</script>
+</body>
+</html>

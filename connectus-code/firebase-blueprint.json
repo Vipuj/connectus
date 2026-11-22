@@ -1,0 +1,1030 @@
+{
+  "entities": {
+    "StudentProfile": {
+      "title": "StudentProfile",
+      "description": "Authenticated Hyderabad student onboarding and event discovery profile.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["student"]
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 180
+        },
+        "phoneNumber": {
+          "type": "string",
+          "maxLength": 24
+        },
+        "photoUrl": {
+          "type": "string",
+          "maxLength": 80000
+        },
+        "course": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "branch": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "semester": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "year": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 30
+        },
+        "collegeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "customCollegeName": {
+          "type": "string",
+          "maxLength": 150
+        },
+        "collegePlaceId": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "collegeAddress": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "collegeLat": {
+          "type": "number"
+        },
+        "collegeLng": {
+          "type": "number"
+        },
+        "collegeVerified": {
+          "type": "boolean"
+        },
+        "areaId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "locationLabel": {
+          "type": "string",
+          "maxLength": 160
+        },
+        "locationLat": {
+          "type": "number"
+        },
+        "locationLng": {
+          "type": "number"
+        },
+        "radiusKm": {
+          "type": "number"
+        },
+        "interests": {
+          "type": "string",
+          "description": "Bounded list of up to 10 event category strings."
+        },
+        "followedCollegeIds": {
+          "type": "string",
+          "description": "Bounded list of up to 100 followed college IDs."
+        },
+        "onboardingCompleted": {
+          "type": "boolean"
+        },
+        "consentAccepted": {
+          "type": "boolean"
+        },
+        "skills": {
+          "type": "string",
+          "description": "Bounded list of up to 15 current student skill strings."
+        },
+        "learningGoals": {
+          "type": "string",
+          "description": "Bounded list of up to 15 target learning goal skill strings."
+        },
+        "headline": {
+          "type": "string",
+          "maxLength": 140
+        },
+        "bio": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "graduationYear": {
+          "type": "string",
+          "maxLength": 16
+        },
+        "rollNumber": {
+          "type": "string",
+          "maxLength": 40
+        },
+        "linkedinUrl": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "githubUrl": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "portfolioUrl": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "leetcodeUrl": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "hackerrankUrl": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "instagramUrl": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "savedEventIds": {
+          "type": "string",
+          "description": "Bounded list of up to 100 saved event IDs."
+        },
+        "mutedAll": {
+          "type": "boolean"
+        },
+        "telegramConnected": {
+          "type": "boolean"
+        },
+        "telegramHandle": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "telegramChatId": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "quietHours": {
+          "type": "object",
+          "description": "IST quiet hours configuration (enabled, start, end)."
+        },
+        "profileVisibility": {
+          "type": "object",
+          "description": "Student visibility defaults (linksVisibility, discoverableInTeams, showAcademicYear)."
+        },
+        "accessibilityPrefs": {
+          "type": "object",
+          "description": "Appearance and accessibility toggles (reducedMotion, highContrastFocus, compactDensity, themePreference: system|light|dark)."
+        },
+        "preferredModes": {
+          "type": "string",
+          "description": "Bounded list of up to 3 preferred event delivery modes."
+        },
+        "availability": {
+          "type": "string",
+          "enum": ["Weekends", "Evenings", "Open to All"]
+        },
+        "priorityLowSeatAlerts": {
+          "type": "boolean"
+        },
+        "teamDiscoveryEnabled": {
+          "type": "boolean"
+        },
+        "teamCallNotifications": {
+          "type": "boolean"
+        },
+        "gender": {
+          "type": "string",
+          "enum": ["woman", "man", "non_binary", "prefer_not_to_say", "unset"]
+        },
+        "languages": {
+          "type": "string",
+          "description": "Bounded list of up to 5 spoken language strings from the Connectus allowlist."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "role",
+        "displayName",
+        "email",
+        "course",
+        "branch",
+        "semester",
+        "year",
+        "collegeId",
+        "collegeVerified",
+        "areaId",
+        "radiusKm",
+        "interests",
+        "followedCollegeIds",
+        "onboardingCompleted",
+        "consentAccepted",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "OrganizerApplication": {
+      "title": "OrganizerApplication",
+      "description": "External partner or club verification application requiring domain or faculty proof and Campus Official review.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "clubName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "contactName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "designation": {
+          "type": "string",
+          "enum": ["Faculty Coordinator", "Student Affairs / Dean Office", "Verified Club President", "Department HOD"]
+        },
+        "officialEmail": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 180
+        },
+        "facultyEmail": {
+          "type": "string",
+          "maxLength": 180
+        },
+        "collegeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "domainMatched": {
+          "type": "boolean"
+        },
+        "proofNote": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 400
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "clubName",
+        "contactName",
+        "designation",
+        "officialEmail",
+        "collegeId",
+        "domainMatched",
+        "proofNote",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "OfficialMembership": {
+      "title": "OfficialMembership",
+      "description": "Verified college officials and invited club leaders authorized to publish and edit events for their institution.",
+      "type": "object",
+      "properties": {
+        "uid": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "collegeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "clubName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "contactName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 120
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 180
+        },
+        "designation": {
+          "type": "string",
+          "maxLength": 80
+        },
+        "memberRole": {
+          "type": "string",
+          "enum": ["college_official", "club_leader"]
+        },
+        "invitedByUid": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "inviteToken": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "status": {
+          "type": "string",
+          "enum": ["approved", "revoked"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "uid",
+        "collegeId",
+        "clubName",
+        "contactName",
+        "email",
+        "designation",
+        "memberRole",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "OfficialInvite": {
+      "title": "OfficialInvite",
+      "description": "Single-or-multi-use invite token generated by a verified college official to add club leaders to the official list.",
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "code": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 40
+        },
+        "collegeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "clubName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 140
+        },
+        "createdByUid": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "createdByName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "createdByEmail": {
+          "type": "string",
+          "format": "email",
+          "maxLength": 180
+        },
+        "targetEmail": {
+          "type": "string",
+          "maxLength": 180
+        },
+        "maxUses": {
+          "type": "number"
+        },
+        "usedCount": {
+          "type": "number"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "used", "revoked"]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "token",
+        "code",
+        "collegeId",
+        "clubName",
+        "createdByUid",
+        "createdByName",
+        "createdByEmail",
+        "maxUses",
+        "usedCount",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "BetaConfig": {
+      "title": "BetaConfig",
+      "description": "Private 6-seat invite-only beta configuration managed by the designated Campus Official.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 40, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "enabled": { "type": "boolean" },
+        "maxSeats": { "type": "number" },
+        "managerEmail": { "type": "string", "format": "email", "maxLength": 180 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "enabled", "maxSeats", "managerEmail", "createdAt", "updatedAt"]
+    },
+    "BetaSeat": {
+      "title": "BetaSeat",
+      "description": "Approved Google account beta seat keyed by SHA-256 hex digest of lowercase email.",
+      "type": "object",
+      "properties": {
+        "seatId": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "email": { "type": "string", "format": "email", "maxLength": 180 },
+        "role": { "type": "string", "enum": ["college_official", "club_leader", "student"] },
+        "status": { "type": "string", "enum": ["active", "revoked"] },
+        "invitedByCode": { "type": "string", "maxLength": 32 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["seatId", "email", "role", "status", "createdAt", "updatedAt"]
+    },
+    "BetaInviteCode": {
+      "title": "BetaInviteCode",
+      "description": "One-time access code generated by the Campus Official to unlock a regular student beta seat.",
+      "type": "object",
+      "properties": {
+        "code": { "type": "string", "maxLength": 32, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "label": { "type": "string", "maxLength": 80 },
+        "usedByEmail": { "type": "string", "maxLength": 180 },
+        "usedAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["code", "createdAt", "updatedAt"]
+    },
+    "CampusEvent": {
+      "title": "CampusEvent",
+      "description": "Synced campus event document shared across Cloud Run restarts and multi-device beta sessions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "clubId": { "type": "string", "maxLength": 128 },
+        "clubName": { "type": "string", "maxLength": 140 },
+        "collegeId": { "type": "string", "maxLength": 80 },
+        "title": { "type": "string", "maxLength": 200 },
+        "description": { "type": "string", "maxLength": 4000 },
+        "type": { "type": "string", "enum": ["Hackathon", "Workshop", "Talk", "Cultural", "Competition", "Meetup"] },
+        "startAt": { "type": "string", "maxLength": 60 },
+        "endAt": { "type": "string", "maxLength": 60 },
+        "venueName": { "type": "string", "maxLength": 200 },
+        "areaId": { "type": "string", "maxLength": 80 },
+        "placeId": { "type": "string", "maxLength": 140 },
+        "formattedAddress": { "type": "string", "maxLength": 240 },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "mode": { "type": "string", "enum": ["In-Person", "Hybrid", "Online"] },
+        "audience": { "type": "string", "enum": ["open_to_all", "host_college_only"] },
+        "regStatus": { "type": "string", "enum": ["open", "closed"] },
+        "branches": { "type": "array" },
+        "years": { "type": "array" },
+        "feeInr": { "type": "number" },
+        "capacity": { "type": "number" },
+        "confirmedCount": { "type": "number" },
+        "waitlistCount": { "type": "number" },
+        "regDeadline": { "type": "string", "maxLength": 60 },
+        "regLink": { "type": "string", "maxLength": 300 },
+        "googleFormUrl": { "type": "string", "maxLength": 300 },
+        "whatsappGroupUrl": { "type": "string", "maxLength": 300 },
+        "telegramGroupUrl": { "type": "string", "maxLength": 300 },
+        "paymentInfo": { "type": "object" },
+        "rules": { "type": "array" },
+        "teamSize": { "type": "string", "maxLength": 80 },
+        "prizesAndPerks": { "type": "array" },
+        "prerequisites": { "type": "array" },
+        "schedule": { "type": "array" },
+        "coordinatorContact": { "type": "object" },
+        "posterUrl": { "type": "string", "maxLength": 350000 },
+        "additionalPosterUrls": { "type": "array" },
+        "promoVideoUrl": { "type": "string", "maxLength": 400 },
+        "promoVideoCaption": { "type": "string", "maxLength": 200 },
+        "source": { "type": "string", "enum": ["organizer", "seeded", "student_suggested"] },
+        "sourceType": { "type": "string", "maxLength": 60 },
+        "isSponsored": { "type": "boolean" },
+        "sponsorLabel": { "type": "string", "maxLength": 80 },
+        "submissionFeedback": { "type": "string", "maxLength": 400 },
+        "submittedById": { "type": "string", "maxLength": 128 },
+        "submittedByName": { "type": "string", "maxLength": 120 },
+        "approvedById": { "type": "string", "maxLength": 128 },
+        "approvedByName": { "type": "string", "maxLength": 120 },
+        "pendingRevision": { "type": "object" },
+        "revisionPendingReview": { "type": "boolean" },
+        "approvalHistory": { "type": "array" },
+        "aiConfidence": { "type": "object" },
+        "status": { "type": "string", "enum": ["draft", "pending_review", "changes_requested", "approved", "published", "rejected", "cancelled"] },
+        "changeNotice": { "type": "string", "maxLength": 400 },
+        "ownerUid": { "type": "string", "maxLength": 128 },
+        "submittedByEmail": { "type": "string", "maxLength": 180 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "clubId",
+        "clubName",
+        "collegeId",
+        "title",
+        "description",
+        "type",
+        "startAt",
+        "endAt",
+        "venueName",
+        "areaId",
+        "lat",
+        "lng",
+        "mode",
+        "audience",
+        "regStatus",
+        "branches",
+        "years",
+        "feeInr",
+        "capacity",
+        "confirmedCount",
+        "waitlistCount",
+        "regDeadline",
+        "regLink",
+        "posterUrl",
+        "source",
+        "status",
+        "ownerUid",
+        "submittedByEmail",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Registration": {
+      "title": "Registration",
+      "description": "Student event pass registration and check-in state persisted across devices.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "collegeId": { "type": "string", "maxLength": 80 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 120 },
+        "userEmail": { "type": "string", "maxLength": 180 },
+        "userPhone": { "type": "string", "maxLength": 24 },
+        "collegeShortName": { "type": "string", "maxLength": 60 },
+        "rollNumber": { "type": "string", "maxLength": 40 },
+        "branch": { "type": "string", "maxLength": 80 },
+        "year": { "type": "string", "maxLength": 40 },
+        "participationType": { "type": "string", "enum": ["individual", "team"] },
+        "needsTeammates": { "type": "boolean" },
+        "squadId": { "type": "string", "maxLength": 128 },
+        "squadSnapshotId": { "type": "string", "maxLength": 128 },
+        "passCode": { "type": "string", "maxLength": 40 },
+        "qrPayload": { "type": "string", "maxLength": 300 },
+        "paymentStatus": { "type": "string", "enum": ["free", "paid_verified", "pending_verification"] },
+        "amountPaidInr": { "type": "number" },
+        "paymentMethod": { "type": "string", "enum": ["UPI", "College Portal", "Free Pass"] },
+        "paymentRef": { "type": "string", "maxLength": 120 },
+        "teamName": { "type": "string", "maxLength": 120 },
+        "teamMembers": { "type": "string", "maxLength": 400 },
+        "pitchNote": { "type": "string", "maxLength": 400 },
+        "attendeePhotoUrl": { "type": "string", "maxLength": 80000 },
+        "emergencyContact": { "type": "string", "maxLength": 40 },
+        "status": { "type": "string", "enum": ["confirmed", "waitlisted", "cancelled", "checked_in"] },
+        "checkedInAt": { "type": "string", "maxLength": 60 },
+        "checkedInBy": { "type": "string", "maxLength": 120 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": [
+        "id",
+        "eventId",
+        "collegeId",
+        "userId",
+        "userName",
+        "passCode",
+        "qrPayload",
+        "paymentStatus",
+        "amountPaidInr",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "CampusAnnouncement": {
+      "title": "CampusAnnouncement",
+      "description": "Pinned official campus notice published by a verified Campus Official.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "collegeId": { "type": "string", "maxLength": 80 },
+        "collegeShortName": { "type": "string", "maxLength": 60 },
+        "authorId": { "type": "string", "maxLength": 128 },
+        "authorName": { "type": "string", "maxLength": 120 },
+        "authorDesignation": { "type": "string", "maxLength": 120 },
+        "title": { "type": "string", "maxLength": 140 },
+        "body": { "type": "string", "maxLength": 600 },
+        "pinned": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "collegeId", "collegeShortName", "authorId", "authorName", "title", "body", "pinned", "createdAt", "updatedAt"]
+    },
+    "NotificationItem": {
+      "title": "NotificationItem",
+      "description": "Targeted cross-device student/official notification item.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "userId": { "type": "string", "maxLength": 180 },
+        "senderUid": { "type": "string", "maxLength": 128 },
+        "recipientUid": { "type": "string", "maxLength": 128 },
+        "recipientEmail": { "type": "string", "maxLength": 180 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "eventTitle": { "type": "string", "maxLength": 200 },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "followed_college",
+            "morning_digest",
+            "deadline_24h",
+            "reminder_24h",
+            "reminder_2h",
+            "event_change",
+            "waitlist_promoted",
+            "priority_skill_low_seats",
+            "team_up_call",
+            "connection_request",
+            "squad_request",
+            "squad_confirmed",
+            "submission_approved",
+            "submission_changes_requested",
+            "submission_rejected"
+          ]
+        },
+        "channel": { "type": "string", "enum": ["telegram", "in_app"] },
+        "title": { "type": "string", "maxLength": 200 },
+        "body": { "type": "string", "maxLength": 800 },
+        "sendAfter": { "type": "string", "maxLength": 60 },
+        "sentAt": { "type": ["string", "null"], "maxLength": 60 },
+        "status": { "type": "string", "enum": ["queued", "sent", "held_quiet_hours", "capped_daily", "muted"] },
+        "dedupeKey": { "type": "string", "maxLength": 200 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "senderUid", "eventId", "eventTitle", "kind", "channel", "title", "body", "sendAfter", "sentAt", "status", "dedupeKey", "createdAt"]
+    },
+    "PartnerPost": {
+      "title": "PartnerPost",
+      "description": "Public builder availability card for event teammate discovery.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "eventTitle": { "type": "string", "maxLength": 200 },
+        "eventType": { "type": "string", "maxLength": 40 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "userName": { "type": "string", "maxLength": 120 },
+        "collegeId": { "type": "string", "maxLength": 80 },
+        "collegeShortName": { "type": "string", "maxLength": 60 },
+        "branch": { "type": "string", "maxLength": 80 },
+        "year": { "type": "string", "maxLength": 40 },
+        "skills": { "type": "string", "description": "Bounded list of up to 15 skills." },
+        "roleSkill": { "type": "string", "maxLength": 100 },
+        "lookingFor": { "type": "string", "maxLength": 120 },
+        "teamSlotsNeeded": { "type": "number" },
+        "note": { "type": "string", "maxLength": 300 },
+        "whatsappReady": { "type": "boolean" },
+        "discoveryEnabled": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "eventId", "userId", "userName", "roleSkill", "lookingFor", "createdAt"]
+    },
+    "Squad": {
+      "title": "Squad",
+      "description": "Official formed team or recruiting squad for an event. Private links stored only when member.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "name": { "type": "string", "maxLength": 80 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "eventTitle": { "type": "string", "maxLength": 200 },
+        "eventType": { "type": "string", "maxLength": 40 },
+        "ownerId": { "type": "string", "maxLength": 128 },
+        "targetSize": { "type": "number" },
+        "requiredRoles": { "type": "string", "description": "Bounded list of up to 10 roles needed." },
+        "recruitmentStatus": { "type": "string", "enum": ["open", "closed", "locked"] },
+        "isLocked": { "type": "boolean" },
+        "whatsappGroupUrl": { "type": "string", "maxLength": 300 },
+        "memberIds": { "type": "string", "description": "Bounded list of up to 10 member UIDs." },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "eventId", "ownerId", "targetSize", "recruitmentStatus", "memberIds", "createdAt", "updatedAt"]
+    },
+    "ConnectionRequest": {
+      "title": "ConnectionRequest",
+      "description": "1-on-1 mutual-interest teammate request between two students.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "eventTitle": { "type": "string", "maxLength": 200 },
+        "fromUserId": { "type": "string", "maxLength": 128 },
+        "toUserId": { "type": "string", "maxLength": 128 },
+        "note": { "type": "string", "maxLength": 300 },
+        "status": { "type": "string", "enum": ["pending", "accepted", "declined", "expired"] },
+        "conversationId": { "type": "string", "maxLength": 128 },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "eventId", "fromUserId", "toUserId", "status", "createdAt", "updatedAt"]
+    },
+    "SquadJoinRequest": {
+      "title": "SquadJoinRequest",
+      "description": "Join request sent to an open recruiting squad owner.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "squadId": { "type": "string", "maxLength": 128 },
+        "squadOwnerId": { "type": "string", "maxLength": 128 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "applicantId": { "type": "string", "maxLength": 128 },
+        "roleApplied": { "type": "string", "maxLength": 80 },
+        "note": { "type": "string", "maxLength": 300 },
+        "status": { "type": "string", "enum": ["pending", "approved", "declined", "expired"] },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "squadId", "squadOwnerId", "applicantId", "status", "createdAt", "updatedAt"]
+    },
+    "TeamUpCall": {
+      "title": "TeamUpCall",
+      "description": "Targeted event teammate broadcast sent to eligible students.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "eventIds": { "type": "string", "description": "Bounded list of 1 to 3 targeted event IDs." },
+        "events": { "type": "string", "description": "Bounded list of up to 3 targeted event summaries." },
+        "creatorId": { "type": "string", "maxLength": 128 },
+        "teammatesNeeded": { "type": "number" },
+        "preferredCollege": { "type": "string", "maxLength": 80 },
+        "preferredYear": { "type": "string", "maxLength": 40 },
+        "preferredSkills": { "type": "string", "description": "Bounded list of up to 10 skills." },
+        "rolesNeeded": { "type": "string", "description": "Bounded list of up to 10 roles." },
+        "preferredAreas": { "type": "string", "description": "Bounded list of up to 16 corridor area IDs." },
+        "preferredLanguages": { "type": "string", "description": "Bounded list of up to 10 spoken languages." },
+        "genderPreference": { "type": "string", "enum": ["any", "woman", "man", "non_binary"] },
+        "audienceMode": { "type": "string", "enum": ["active_only", "all_matching"] },
+        "note": { "type": "string", "maxLength": 300 },
+        "eligibleCount": { "type": "number" },
+        "recipientUserIds": { "type": "string", "description": "Bounded list of up to 50 recipient UIDs." },
+        "status": { "type": "string", "enum": ["active", "closed", "expired"] },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "eventId", "creatorId", "teammatesNeeded", "status", "createdAt", "updatedAt"]
+    },
+    "TeamConversation": {
+      "title": "TeamConversation",
+      "description": "Private 1-on-1 teammate introduction chat with mutual confirmation prior to squad creation.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "participantIds": { "type": "string", "description": "Bounded list of exactly 2 UIDs." },
+        "confirmedByUserIds": { "type": "string", "description": "Bounded list of confirming UIDs." },
+        "status": { "type": "string", "enum": ["active", "confirmed_to_squad", "archived"] },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "eventId", "participantIds", "status", "createdAt", "updatedAt"]
+    },
+    "TeamChatMessage": {
+      "title": "TeamChatMessage",
+      "description": "Private message belonging to a TeamConversation or Squad room.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "roomId": { "type": "string", "maxLength": 128 },
+        "roomScope": { "type": "string", "enum": ["conversation", "squad"] },
+        "senderId": { "type": "string", "maxLength": 128 },
+        "senderName": { "type": "string", "maxLength": 120 },
+        "kind": { "type": "string", "enum": ["text", "whatsapp_contact", "whatsapp_group", "system"] },
+        "body": { "type": "string", "maxLength": 1000 },
+        "participantIds": { "type": "string", "description": "Bounded list of up to 10 room member UIDs for read isolation." },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "roomId", "roomScope", "senderId", "kind", "body", "participantIds", "createdAt"]
+    },
+    "SquadRegistrationSnapshot": {
+      "title": "SquadRegistrationSnapshot",
+      "description": "Immutable event registration roster snapshot for a locked squad.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "squadId": { "type": "string", "maxLength": 128 },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "submittedByUserId": { "type": "string", "maxLength": 128 },
+        "memberIds": { "type": "string", "description": "Bounded list of up to 10 member UIDs." },
+        "status": { "type": "string", "enum": ["submitted", "needs_update", "amended"] },
+        "rosterHash": { "type": "string", "maxLength": 200 },
+        "submittedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "squadId", "eventId", "submittedByUserId", "memberIds", "status", "rosterHash", "submittedAt"]
+    },
+    "EventFeedback": {
+      "title": "EventFeedback",
+      "description": "Participant rating, review, suggestion, and complaint for a campus event.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "eventId": { "type": "string", "maxLength": 128 },
+        "collegeId": { "type": "string", "maxLength": 80 },
+        "clubId": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "authorName": { "type": "string", "maxLength": 120 },
+        "isAnonymous": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "requestedCategory": { "type": "string", "maxLength": 60 },
+        "comment": { "type": "string", "maxLength": 600 },
+        "suggestion": { "type": "string", "maxLength": 400 },
+        "complaint": { "type": "string", "maxLength": 400 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "eventId", "collegeId", "clubId", "userId", "isAnonymous", "rating", "comment", "createdAt"]
+    },
+    "CampusSurvey": {
+      "title": "CampusSurvey",
+      "description": "Institution survey created by a Campus Official for student feedback.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "collegeId": { "type": "string", "maxLength": 80 },
+        "createdById": { "type": "string", "maxLength": 128 },
+        "createdByName": { "type": "string", "maxLength": 120 },
+        "title": { "type": "string", "maxLength": 140 },
+        "questionPrompt": { "type": "string", "maxLength": 300 },
+        "status": { "type": "string", "enum": ["active", "closed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "collegeId", "createdById", "title", "questionPrompt", "status", "createdAt"]
+    },
+    "SurveyResponse": {
+      "title": "SurveyResponse",
+      "description": "Student response to an active CampusSurvey.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "surveyId": { "type": "string", "maxLength": 128 },
+        "collegeId": { "type": "string", "maxLength": 80 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "isAnonymous": { "type": "boolean" },
+        "responseText": { "type": "string", "maxLength": 600 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "surveyId", "collegeId", "userId", "isAnonymous", "responseText", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/studentProfiles/{userId}": {
+      "schema": { "$ref": "#/entities/StudentProfile" },
+      "description": "Private student profile documents keyed by Firebase Auth UID."
+    },
+    "/organizerApplications/{userId}": {
+      "schema": { "$ref": "#/entities/OrganizerApplication" },
+      "description": "External partner verification requests keyed by applicant UID, locked to pending until Campus Official approval."
+    },
+    "/officialMemberships/{userId}": {
+      "schema": { "$ref": "#/entities/OfficialMembership" },
+      "description": "Active official members (verified college officials and invited club leaders) keyed by Firebase Auth UID."
+    },
+    "/officialInvites/{tokenId}": {
+      "schema": { "$ref": "#/entities/OfficialInvite" },
+      "description": "Invite tokens issued by verified college officials for club leaders."
+    },
+    "/betaConfig/{configId}": {
+      "schema": { "$ref": "#/entities/BetaConfig" },
+      "description": "Private 6-seat closed-beta toggle and capacity config managed by nvipuj@gmail.com."
+    },
+    "/betaSeats/{seatId}": {
+      "schema": { "$ref": "#/entities/BetaSeat" },
+      "description": "Approved Google account beta seats keyed by SHA-256 email hash."
+    },
+    "/betaInviteCodes/{codeId}": {
+      "schema": { "$ref": "#/entities/BetaInviteCode" },
+      "description": "One-time access codes issued by Campus Official for regular student beta testers."
+    },
+    "/events/{eventId}": {
+      "schema": { "$ref": "#/entities/CampusEvent" },
+      "description": "Campus events synced across devices and Cloud Run container restarts."
+    },
+    "/registrations/{regId}": {
+      "schema": { "$ref": "#/entities/Registration" },
+      "description": "Student event registrations and check-in statuses scoped to registrant and institution officials."
+    },
+    "/announcements/{annId}": {
+      "schema": { "$ref": "#/entities/CampusAnnouncement" },
+      "description": "Pinned institutional announcements authored by verified Campus Officials."
+    },
+    "/notifications/{notifId}": {
+      "schema": { "$ref": "#/entities/NotificationItem" },
+      "description": "Targeted event and approval notifications scoped strictly to recipientUid/recipientEmail or sender."
+    },
+    "/partnerPosts/{postId}": {
+      "schema": { "$ref": "#/entities/PartnerPost" },
+      "description": "Discoverable builder availability posts scoped by owner write access."
+    },
+    "/squads/{squadId}": {
+      "schema": { "$ref": "#/entities/Squad" },
+      "description": "Formed event squads scoped strictly to memberIds for private details and ownerId for management."
+    },
+    "/connectionRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/ConnectionRequest" },
+      "description": "Private 1-on-1 connection requests visible strictly to sender or recipient."
+    },
+    "/joinRequests/{requestId}": {
+      "schema": { "$ref": "#/entities/SquadJoinRequest" },
+      "description": "Squad join requests visible strictly to applicant or squad owner."
+    },
+    "/teamUpCalls/{callId}": {
+      "schema": { "$ref": "#/entities/TeamUpCall" },
+      "description": "Targeted Team-up Calls visible strictly to creator or matched recipientUserIds."
+    },
+    "/conversations/{conversationId}": {
+      "schema": { "$ref": "#/entities/TeamConversation" },
+      "description": "Private 1-on-1 conversations visible strictly to participantIds."
+    },
+    "/chatMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/TeamChatMessage" },
+      "description": "Chat messages scoped strictly to participantIds on each message."
+    },
+    "/registrationSnapshots/{snapshotId}": {
+      "schema": { "$ref": "#/entities/SquadRegistrationSnapshot" },
+      "description": "Squad registration roster snapshots visible strictly to squad memberIds."
+    },
+    "/eventFeedback/{feedbackId}": {
+      "schema": { "$ref": "#/entities/EventFeedback" },
+      "description": "Student feedback submissions for campus events."
+    },
+    "/surveys/{surveyId}": {
+      "schema": { "$ref": "#/entities/CampusSurvey" },
+      "description": "Campus-wide feedback surveys authored by Campus Officials."
+    },
+    "/surveyResponses/{responseId}": {
+      "schema": { "$ref": "#/entities/SurveyResponse" },
+      "description": "Student responses to campus surveys."
+    }
+  }
+}

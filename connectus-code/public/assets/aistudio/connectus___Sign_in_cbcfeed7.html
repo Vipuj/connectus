@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>connectus · Sign in</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FBF3E6;--nav:#FDF6EA;--card:#FFFBF4;--ink:#2A1A17;--ink2:#4A3B36;--maroon:#9F2B45;--maroon-d:#4A1426;--dot:#E8470A;--tint:#F6DDD8;--line:#2A1A17;--soft:#E2D6C3;
+--ok-bg:#E3F3E8;--ok-ink:#1B5E34;--warn-bg:#FFF0CC;--warn-ink:#7A4E00;--err-bg:#FBE0DE;--err-ink:#A3201A;--r:14px;
+--disp:"Bricolage Grotesque",system-ui,sans-serif;--sans:"Plus Jakarta Sans",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1B1210;--nav:#221715;--card:#271B18;--ink:#F6EBDD;--ink2:#D3C2B8;--maroon:#D04A68;--maroon-d:#E9A3B3;--tint:#4A2A2E;--line:#F6EBDD;--soft:#3A2A26;--ok-bg:#12301E;--ok-ink:#7FD39B;--warn-bg:#33270A;--warn-ink:#F2C45A;--err-bg:#3A1513;--err-ink:#F5A19B}}
+:root[data-theme="dark"]{--bg:#1B1210;--nav:#221715;--card:#271B18;--ink:#F6EBDD;--ink2:#D3C2B8;--maroon:#D04A68;--maroon-d:#E9A3B3;--tint:#4A2A2E;--line:#F6EBDD;--soft:#3A2A26;--ok-bg:#12301E;--ok-ink:#7FD39B;--warn-bg:#33270A;--warn-ink:#F2C45A;--err-bg:#3A1513;--err-ink:#F5A19B}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--sans);min-height:100vh;display:flex;flex-direction:column}
+button{font-family:inherit;color:inherit;cursor:pointer}
+header{background:var(--nav);border-bottom:1px solid var(--soft);height:72px;display:flex;align-items:center;padding:0 clamp(16px,3vw,32px)}
+.logo{display:flex;align-items:center;gap:10px;font:700 28px var(--disp);letter-spacing:-.03em}
+main{flex:1;width:100%;max-width:1200px;margin:0 auto;padding:clamp(24px,5vw,56px) clamp(16px,3vw,32px);display:grid;gap:clamp(32px,6vw,72px);align-content:center;align-items:center}
+@media(min-width:960px){main{grid-template-columns:1.1fr 1fr}}
+h1{font:800 clamp(44px,6.6vw,80px)/.98 var(--disp);letter-spacing:-.045em;margin:0 0 20px;text-wrap:balance}
+h1 i{font-style:normal;color:var(--dot)}
+.lede{color:var(--ink2);font-size:19px;max-width:44ch;margin:0 0 28px}
+.pts{list-style:none;margin:0;padding:0;display:grid;gap:12px;max-width:44ch}
+.pts li{display:flex;gap:12px}
+.pts li::before{content:"";flex:none;width:10px;height:10px;margin-top:9px;background:var(--maroon)}
+.pts b{font-weight:700}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:8px 8px 0 var(--maroon);padding:clamp(22px,4vw,34px)}
+.step{font:500 14px var(--mono);color:var(--ink2);margin-bottom:10px}
+h2{font:700 28px/1.12 var(--disp);letter-spacing:-.03em;margin:0 0 8px}
+.sub{margin:0 0 22px;color:var(--ink2);font-size:16px}
+.roles{display:grid;gap:12px;margin-bottom:20px}
+.role{text-align:left;min-height:64px;padding:16px 18px;background:transparent;border:1px solid var(--line);border-radius:var(--r);width:100%}
+.role b{display:block;font:700 19px var(--disp);letter-spacing:-.01em}
+.role span{display:block;font-size:15px;color:var(--ink2);line-height:1.4;margin-top:2px}
+.role[aria-pressed="true"]{border:2px solid var(--maroon);background:var(--tint);padding:15px 17px}
+.cta{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:54px;border:1px solid var(--maroon);background:var(--maroon);color:#fff;font:700 18px var(--sans);border-radius:var(--r);box-shadow:3px 3px 0 var(--maroon-d)}
+.cta.alt{background:transparent;color:var(--ink);border-color:var(--line);box-shadow:none;margin-top:12px;font-size:17px}
+.cta:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;justify-content:center;margin-top:16px}
+.lk{background:none;border:0;padding:0 8px;min-height:44px;color:var(--maroon);font:600 16px var(--sans);text-decoration:underline;text-underline-offset:3px}
+.info{border:1px solid var(--soft);border-radius:var(--r);padding:16px 18px;margin-bottom:18px;font-size:16px;color:var(--ink2)}
+.info b{display:block;color:var(--ink);font-weight:700;margin-bottom:6px}
+.info ul{margin:0;padding-left:20px;display:grid;gap:4px}
+.note{border-radius:var(--r);padding:14px 16px;margin-bottom:18px;font-size:16px}
+.note b{display:block;margin-bottom:2px}
+.ok{background:var(--ok-bg);color:var(--ok-ink)}.warn{background:var(--warn-bg);color:var(--warn-ink)}.err{background:var(--err-bg);color:var(--err-ink)}
+.mail{font:400 15px var(--mono)}
+details{margin-top:14px;font-size:15px;color:var(--ink2)}
+summary{cursor:pointer;min-height:44px;display:flex;align-items:center}
+select{width:100%;min-height:48px;padding:8px 12px;border:1px solid var(--line);border-radius:var(--r);background:var(--card);color:var(--ink);font:500 16px var(--sans)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--tint);border:1px solid var(--maroon);border-radius:var(--r);padding:4px;gap:4px;margin-bottom:18px}.sg{min-height:48px;border:0;border-radius:10px;background:transparent;font:600 16px var(--sans)}.sg[aria-pressed="true"]{background:var(--maroon);color:#fff}
+.spin{width:18px;height:18px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:r .7s linear infinite}
+@keyframes r{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none;border-right-color:currentColor}}
+:focus-visible{outline:3px solid var(--dot);outline-offset:2px}
+</style>
+</head>
+<body>
+<header><div class="logo"><svg width="30" height="30" viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect x="3" y="11" width="17" height="11" rx="5.5" transform="rotate(-35 11 16)" stroke="#E8470A" stroke-width="3.2"/><rect x="12" y="10" width="17" height="11" rx="5.5" transform="rotate(-35 20 15)" stroke="currentColor" stroke-width="3.2"/></svg>connectus</div></header>
+<main>
+  <section>
+    <h1>Find the event. Find your squad<i>.</i></h1>
+    <p class="lede">Hackathons, workshops and fests near your campus, with QR passes and teammate matching.</p>
+    <ul class="pts">
+      <li><span><b>Students</b> discover events, register in one tap and join a squad.</span></li>
+      <li><span><b>Campus officials</b> post events and track registrations after the server verifies the account.</span></li>
+    </ul>
+  </section>
+  <section class="panel" id="panel" aria-live="polite"></section>
+</main>
+<script>
+// DEMO ONLY: Google sign-in and the server check are simulated.
+// In production the server decides role and organizer status from its own records; this page only sends a hint.
+var P=document.getElementById('panel'),role=null,verdict='ok',mode='new';
+var OPT={student:{new:[['ok','Account created'],['exists','Email already registered']],existing:[['ok','Account found'],['none','No account for this email']]},official:{new:[['ok','Application submitted'],['exists','Email already registered']],existing:[['approved','Approved organizer'],['pending','Pending admin review'],['rejected','Application rejected'],['none','No organizer application']]}};
+function s1(){P.innerHTML='<div class="step">Step 1 of 2</div><h2>Who is signing in?</h2><p class="sub">Choose your role. Next you’ll say whether you’re new or already registered.</p>'+
+'<div class="roles"><button class="role" data-role="student" aria-pressed="'+(role==='student')+'"><b>Student</b><span>Discover events, register, get QR passes, find a squad.</span></button><button class="role" data-role="official" aria-pressed="'+(role==='official')+'"><b>Campus official</b><span>Post events and see registration stats. Needs a verified account.</span></button></div><button class="cta" id="next" '+(role?'':'disabled')+'>Continue</button>'}
+function s2(){var o=role==='official';verdict=OPT[role][mode][0][0];
+P.innerHTML='<div class="step">Step 2 of 2</div><h2>'+(o?'Sign in as campus official':'Sign in as student')+'</h2><p class="sub">'+(o?'Use your official college Google account.':'Use your Gmail or college Google account.')+'</p>'+'<div class="seg" role="group" aria-label="Account type"><button class="sg" data-mode="new" aria-pressed="'+(mode==='new')+'">New user</button><button class="sg" data-mode="existing" aria-pressed="'+(mode==='existing')+'">Existing user</button></div>'+
+(o?'<div class="info"><b>The server checks</b><ul><li>Your college email domain</li><li>Your faculty advisor co-sign</li><li>Admin approval</li></ul></div>':(mode==='new'?'<div class="info">You’ll add your phone, course and campus right after signing in.</div>':''))+
+'<button class="cta" id="go">'+(mode==='new'?'Sign up':'Log in')+' with Google</button>'+(o?'':'<button class="cta alt" id="guest">Explore events as guest</button>')+
+'<div class="row"><button class="lk" id="back">Change role</button></div>'+
+'<details><summary>Demo only: simulate the server result</summary><select id="v" aria-label="Simulated server result">'+OPT[role][mode].map(function(x){return '<option value="'+x[0]+'">'+x[1]+'</option>'}).join('')+'</select></details>'}
+function load(){P.innerHTML='<h2>Checking your account</h2><p class="sub">Contacting Google'+(role==='official'?' and the connectus server':'')+'…</p><button class="cta" disabled><span class="spin"></span>Please wait</button>'}
+function done(){var h,e=role==='official'?'organizer@college.edu.in':'student@gmail.com';
+if(verdict==='exists'){P.innerHTML='<h2>You already have an account</h2><div class="note warn"><b>This email is already registered</b>Log in instead of signing up.</div><button class="cta" data-act="tologin">Switch to log in</button><div class="row"><button class="lk" id="back">Change role</button></div>';return}
+if(role==='student'&&verdict==='none')h='<h2>No account found</h2><div class="note warn"><b>No student account for this email</b>Sign up first, then log in next time.</div><button class="cta" data-act="tonew">Switch to sign up</button>';
+else if(role==='official'&&mode==='new')h='<h2>Application submitted</h2><div class="note warn"><b>Waiting for admin approval</b>You can test poster extraction now. Publishing unlocks after an admin approves your account.</div><button class="cta">Open Organizer Studio (publishing locked)</button>';
+else if(role==='student'&&mode==='new')h='<h2>Welcome to connectus</h2><div class="note ok"><b>Signed in</b><span class="mail">'+e+'</span></div><p class="sub">Add your phone, course and campus so we can filter events for you.</p><button class="cta">Set up my profile</button>';
+else if(role==='student')h='<h2>Welcome back</h2><div class="note ok"><b>Signed in</b><span class="mail">'+e+'</span></div><button class="cta">Open Discover</button>';
+else if(verdict==='approved')h='<h2>Organizer verified</h2><div class="note ok"><b>Signed in</b><span class="mail">'+e+'</span></div><button class="cta">Open Organizer Studio</button>';
+else if(verdict==='pending')h='<h2>Waiting for approval</h2><div class="note warn"><b>An admin hasn’t approved your account yet</b>You can test poster extraction now. Publishing unlocks after approval.</div><button class="cta">Open Organizer Studio (publishing locked)</button>';
+else if(verdict==='rejected')h='<h2>Application rejected</h2><div class="note err"><b>Access denied</b>Check the admin’s email for the reason, then reapply with correct proof.</div><button class="cta">Reapply for organizer access</button><button class="cta alt" data-act="stu">Continue as student instead</button>';
+else h='<h2>No organizer account</h2><div class="note warn"><b>No application found for this email</b>Only verified organizers can post events. Apply, or continue as a student.</div><button class="cta">Apply for organizer access</button><button class="cta alt" data-act="stu">Continue as student instead</button>';
+P.innerHTML=h+'<div class="row"><button class="lk" id="out">Sign out</button></div>'}
+document.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+if(b.dataset.role){role=b.dataset.role;s1();var n=document.querySelector('[data-role="'+role+'"]');n&&n.focus()}
+else if(b.id==='next')s2();else if(b.id==='back')s1();
+else if(b.id==='go'){verdict=document.getElementById('v').value;load();setTimeout(done,1000)}
+else if(b.id==='out'){role=null;s1()}
+else if(b.dataset.mode){mode=b.dataset.mode;s2();var m=document.querySelector('[data-mode="'+mode+'"]');m&&m.focus()}
+else if(b.dataset.act==='tologin'){mode='existing';s2()}
+else if(b.dataset.act==='tonew'){mode='new';s2()}
+else if(b.dataset.act==='stu'){role='student';mode='existing';verdict='ok';done()}
+else if(b.id==='guest'){P.innerHTML='<h2>Guest preview</h2><div class="note ok"><b>Public events only</b>Register, squads and posting need sign-in.</div><button class="cta">Open Discover</button><div class="row"><button class="lk" id="out">Back to sign in</button></div>'}});
+s1();
+</script>
+</body>
+</html>

@@ -1,0 +1,1432 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global Safety Net: Default-deny everything not explicitly allowed
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isBetaManager() {
+      return isSignedIn() && request.auth.token.email.lower() == 'nvipuj@gmail.com';
+    }
+
+    function hasOfficialRole(collegeId, expectedRole) {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/officialMemberships/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/officialMemberships/$(request.auth.uid)).data.status == 'approved' &&
+        get(/databases/$(database)/documents/officialMemberships/$(request.auth.uid)).data.memberRole == expectedRole &&
+        get(/databases/$(database)/documents/officialMemberships/$(request.auth.uid)).data.collegeId == collegeId;
+    }
+
+    function isApprovedCollegeOfficial(collegeId) {
+      return hasOfficialRole(collegeId, 'college_official');
+    }
+
+    function isApprovedClubLeader(collegeId) {
+      return hasOfficialRole(collegeId, 'club_leader');
+    }
+
+    function reqStr(data, key, minLen, maxLen) {
+      return data[key] is string && data[key].size() >= minLen && data[key].size() <= maxLen;
+    }
+
+    function optStr(data, key, maxLen) {
+      return !(key in data) || (data[key] is string && data[key].size() <= maxLen);
+    }
+
+    function optNum(data, key, minVal, maxVal) {
+      return !(key in data) || (data[key] is number && data[key] >= minVal && data[key] <= maxVal);
+    }
+
+    function optBool(data, key) {
+      return !(key in data) || data[key] is bool;
+    }
+
+    function reqStrList(data, key, minItems, maxItems) {
+      return data[key] is list &&
+        data[key].size() >= minItems &&
+        data[key].size() <= maxItems &&
+        (data[key].size() == 0 || data[key][0] is string);
+    }
+
+    function optStrList(data, key, maxItems) {
+      return !(key in data) || reqStrList(data, key, 0, maxItems);
+    }
+
+    function optList(data, key, maxItems) {
+      return !(key in data) || (data[key] is list && data[key].size() <= maxItems);
+    }
+
+    function optMap(data, key) {
+      return !(key in data) || data[key] is map;
+    }
+
+    function isValidStudentProfile(data, userId) {
+      return data.keys().hasAll([
+        'uid', 'role', 'displayName', 'email', 'course', 'branch', 'semester', 'year',
+        'collegeId', 'collegeVerified', 'areaId', 'radiusKm', 'interests',
+        'followedCollegeIds', 'onboardingCompleted', 'consentAccepted', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'role', 'displayName', 'email', 'phoneNumber', 'photoUrl', 'course', 'branch', 'semester', 'year',
+        'collegeId', 'customCollegeName', 'collegePlaceId', 'collegeAddress', 'collegeLat', 'collegeLng',
+        'collegeVerified', 'areaId', 'locationLabel', 'locationLat', 'locationLng', 'radiusKm', 'interests',
+        'followedCollegeIds', 'savedEventIds', 'onboardingCompleted', 'consentAccepted',
+        'skills', 'learningGoals', 'headline', 'bio', 'graduationYear', 'rollNumber',
+        'linkedinUrl', 'githubUrl', 'portfolioUrl', 'leetcodeUrl', 'hackerrankUrl', 'instagramUrl',
+        'preferredModes', 'availability', 'priorityLowSeatAlerts',
+        'teamDiscoveryEnabled', 'teamCallNotifications', 'gender', 'languages',
+        'mutedAll', 'telegramConnected', 'telegramHandle', 'telegramChatId', 'quietHours', 'profileVisibility', 'accessibilityPrefs',
+        'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'uid', 1, 128) && data.uid == userId &&
+      data.role == 'student' &&
+      reqStr(data, 'displayName', 1, 120) &&
+      reqStr(data, 'email', 3, 180) &&
+      optStr(data, 'phoneNumber', 24) &&
+      optStr(data, 'photoUrl', 80000) &&
+      reqStr(data, 'course', 1, 60) &&
+      reqStr(data, 'branch', 1, 80) &&
+      reqStr(data, 'semester', 1, 30) &&
+      reqStr(data, 'year', 1, 30) &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      optStr(data, 'customCollegeName', 150) &&
+      optStr(data, 'collegePlaceId', 140) &&
+      optStr(data, 'collegeAddress', 240) &&
+      optNum(data, 'collegeLat', -90, 90) &&
+      optNum(data, 'collegeLng', -180, 180) &&
+      data.collegeVerified is bool &&
+      reqStr(data, 'areaId', 1, 80) &&
+      optStr(data, 'locationLabel', 160) &&
+      optNum(data, 'locationLat', -90, 90) &&
+      optNum(data, 'locationLng', -180, 180) &&
+      data.radiusKm is number && data.radiusKm in [5, 10, 20, 50] &&
+      reqStrList(data, 'interests', 0, 10) &&
+      reqStrList(data, 'followedCollegeIds', 0, 100) &&
+      optStrList(data, 'savedEventIds', 100) &&
+      data.onboardingCompleted is bool &&
+      data.consentAccepted is bool &&
+      optStrList(data, 'skills', 15) &&
+      optStrList(data, 'learningGoals', 15) &&
+      optStr(data, 'headline', 140) &&
+      optStr(data, 'bio', 300) &&
+      optStr(data, 'graduationYear', 16) &&
+      optStr(data, 'rollNumber', 40) &&
+      optStr(data, 'linkedinUrl', 200) &&
+      optStr(data, 'githubUrl', 200) &&
+      optStr(data, 'portfolioUrl', 200) &&
+      optStr(data, 'leetcodeUrl', 200) &&
+      optStr(data, 'hackerrankUrl', 200) &&
+      optStr(data, 'instagramUrl', 200) &&
+      optStrList(data, 'preferredModes', 3) &&
+      (!('availability' in data) || data.availability in ['Weekends', 'Evenings', 'Open to All']) &&
+      optBool(data, 'priorityLowSeatAlerts') &&
+      optBool(data, 'teamDiscoveryEnabled') &&
+      optBool(data, 'teamCallNotifications') &&
+      optBool(data, 'mutedAll') &&
+      optBool(data, 'telegramConnected') &&
+      optStr(data, 'telegramHandle', 64) &&
+      optStr(data, 'telegramChatId', 64) &&
+      (!('quietHours' in data) || (
+        data.quietHours is map &&
+        data.quietHours.keys().hasAll(['enabled', 'start', 'end']) &&
+        data.quietHours.keys().hasOnly(['enabled', 'start', 'end']) &&
+        data.quietHours.enabled is bool &&
+        data.quietHours.start is string && data.quietHours.start.size() <= 10 &&
+        data.quietHours.end is string && data.quietHours.end.size() <= 10
+      )) &&
+      (!('profileVisibility' in data) || (
+        data.profileVisibility is map &&
+        data.profileVisibility.keys().hasAll(['linksVisibility', 'discoverableInTeams', 'showAcademicYear']) &&
+        data.profileVisibility.keys().hasOnly(['linksVisibility', 'discoverableInTeams', 'showAcademicYear']) &&
+        data.profileVisibility.linksVisibility in ['public', 'squads', 'hidden'] &&
+        data.profileVisibility.discoverableInTeams is bool &&
+        data.profileVisibility.showAcademicYear is bool
+      )) &&
+      (!('accessibilityPrefs' in data) || (
+        data.accessibilityPrefs is map &&
+        data.accessibilityPrefs.keys().hasAll(['reducedMotion', 'highContrastFocus', 'compactDensity']) &&
+        data.accessibilityPrefs.keys().hasOnly(['reducedMotion', 'highContrastFocus', 'compactDensity', 'themePreference']) &&
+        data.accessibilityPrefs.reducedMotion is bool &&
+        data.accessibilityPrefs.highContrastFocus is bool &&
+        data.accessibilityPrefs.compactDensity is bool &&
+        (!('themePreference' in data.accessibilityPrefs) || data.accessibilityPrefs.themePreference in ['system', 'light', 'dark'])
+      )) &&
+      (!('gender' in data) || data.gender in ['woman', 'man', 'non_binary', 'prefer_not_to_say', 'unset']) &&
+      (!('languages' in data) || (
+        data.languages is list &&
+        data.languages.size() <= 5 &&
+        data.languages.hasOnly(['English', 'Hindi', 'Telugu', 'Tamil', 'Kannada', 'Malayalam', 'Marathi', 'Bengali', 'Urdu', 'Other'])
+      )) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidOrganizerApplication(data, userId) {
+      return data.keys().hasAll([
+        'uid', 'clubName', 'contactName', 'designation', 'officialEmail',
+        'collegeId', 'domainMatched', 'proofNote', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'clubName', 'contactName', 'designation', 'officialEmail', 'facultyEmail',
+        'collegeId', 'domainMatched', 'proofNote', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'uid', 1, 128) && data.uid == userId &&
+      reqStr(data, 'clubName', 2, 140) &&
+      reqStr(data, 'contactName', 2, 120) &&
+      data.designation in ['Faculty Coordinator', 'Student Affairs / Dean Office', 'Verified Club President', 'Department HOD'] &&
+      reqStr(data, 'officialEmail', 3, 180) &&
+      optStr(data, 'facultyEmail', 180) &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      data.domainMatched is bool &&
+      reqStr(data, 'proofNote', 4, 400) &&
+      data.status in ['pending', 'approved', 'rejected'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidOfficialMembership(data, userId) {
+      return data.keys().hasAll([
+        'uid', 'collegeId', 'clubName', 'contactName', 'email', 'designation',
+        'memberRole', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'uid', 'collegeId', 'clubName', 'contactName', 'email', 'designation',
+        'memberRole', 'invitedByUid', 'inviteToken', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'uid', 1, 128) && data.uid == userId &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      reqStr(data, 'clubName', 2, 140) &&
+      reqStr(data, 'contactName', 2, 120) &&
+      reqStr(data, 'email', 3, 180) &&
+      reqStr(data, 'designation', 2, 80) &&
+      data.memberRole in ['college_official', 'club_leader'] &&
+      optStr(data, 'invitedByUid', 128) &&
+      optStr(data, 'inviteToken', 128) &&
+      data.status in ['approved', 'revoked'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidOfficialInvite(data, tokenId) {
+      return data.keys().hasAll([
+        'token', 'code', 'collegeId', 'clubName', 'createdByUid', 'createdByName',
+        'createdByEmail', 'maxUses', 'usedCount', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'token', 'code', 'collegeId', 'clubName', 'createdByUid', 'createdByName',
+        'createdByEmail', 'targetEmail', 'maxUses', 'usedCount', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'token', 1, 128) && data.token == tokenId &&
+      reqStr(data, 'code', 4, 40) &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      reqStr(data, 'clubName', 2, 140) &&
+      reqStr(data, 'createdByUid', 1, 128) &&
+      reqStr(data, 'createdByName', 1, 120) &&
+      reqStr(data, 'createdByEmail', 3, 180) &&
+      optStr(data, 'targetEmail', 180) &&
+      data.maxUses is number && data.maxUses >= 1 && data.maxUses <= 50 &&
+      data.usedCount is number && data.usedCount >= 0 && data.usedCount <= data.maxUses &&
+      data.status in ['active', 'used', 'revoked'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidBetaConfig(data, configId) {
+      return data.keys().hasAll(['id', 'enabled', 'maxSeats', 'managerEmail', 'createdAt', 'updatedAt']) &&
+      data.keys().hasOnly(['id', 'enabled', 'maxSeats', 'managerEmail', 'createdAt', 'updatedAt']) &&
+      data.id == configId && data.id == 'main' &&
+      data.enabled is bool &&
+      data.maxSeats is number && data.maxSeats >= 2 && data.maxSeats <= 20 &&
+      data.managerEmail == 'nvipuj@gmail.com' &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidBetaSeat(data, seatId) {
+      return data.keys().hasAll(['seatId', 'email', 'role', 'status', 'createdAt', 'updatedAt']) &&
+      data.keys().hasOnly(['seatId', 'email', 'role', 'status', 'invitedByCode', 'createdAt', 'updatedAt']) &&
+      reqStr(data, 'seatId', 1, 128) && data.seatId == seatId &&
+      reqStr(data, 'email', 3, 180) &&
+      data.role in ['college_official', 'club_leader', 'student'] &&
+      data.status in ['active', 'revoked'] &&
+      optStr(data, 'invitedByCode', 32) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidBetaInviteCode(data, codeId) {
+      return data.keys().hasAll(['code', 'createdAt', 'updatedAt']) &&
+      data.keys().hasOnly(['code', 'label', 'usedByEmail', 'usedAt', 'createdAt', 'updatedAt']) &&
+      reqStr(data, 'code', 4, 32) && data.code == codeId &&
+      optStr(data, 'label', 80) &&
+      (!('usedByEmail' in data) || reqStr(data, 'usedByEmail', 3, 180)) &&
+      (!('usedAt' in data) || data.usedAt is timestamp) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidCampusEvent(data, eventId) {
+      return data.keys().hasAll([
+        'id', 'clubId', 'clubName', 'collegeId', 'title', 'description', 'type',
+        'startAt', 'endAt', 'venueName', 'areaId', 'lat', 'lng', 'mode', 'audience',
+        'regStatus', 'branches', 'years', 'feeInr', 'capacity', 'confirmedCount',
+        'waitlistCount', 'regDeadline', 'regLink', 'posterUrl', 'source', 'status',
+        'ownerUid', 'submittedByEmail', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'clubId', 'clubName', 'collegeId', 'title', 'description', 'type',
+        'startAt', 'endAt', 'venueName', 'areaId', 'placeId', 'formattedAddress',
+        'lat', 'lng', 'mode', 'audience', 'regStatus', 'branches', 'years',
+        'feeInr', 'capacity', 'confirmedCount', 'waitlistCount', 'regDeadline', 'regLink',
+        'googleFormUrl', 'whatsappGroupUrl', 'telegramGroupUrl', 'paymentInfo',
+        'rules', 'teamSize', 'prizesAndPerks', 'prerequisites', 'schedule', 'coordinatorContact',
+        'posterUrl', 'additionalPosterUrls', 'promoVideoUrl', 'promoVideoCaption', 'source', 'sourceType',
+        'isSponsored', 'sponsorLabel', 'submissionFeedback', 'submittedById', 'submittedByName',
+        'approvedById', 'approvedByName', 'pendingRevision', 'revisionPendingReview',
+        'approvalHistory', 'aiConfidence', 'status', 'changeNotice',
+        'ownerUid', 'submittedByEmail', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == eventId &&
+      reqStr(data, 'clubId', 1, 128) &&
+      reqStr(data, 'clubName', 1, 140) &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      reqStr(data, 'title', 1, 200) &&
+      reqStr(data, 'description', 0, 4000) &&
+      data.type in ['Hackathon', 'Workshop', 'Talk', 'Cultural', 'Competition', 'Meetup'] &&
+      reqStr(data, 'startAt', 4, 60) &&
+      reqStr(data, 'endAt', 4, 60) &&
+      reqStr(data, 'venueName', 1, 200) &&
+      reqStr(data, 'areaId', 1, 80) &&
+      optStr(data, 'placeId', 140) &&
+      optStr(data, 'formattedAddress', 240) &&
+      data.lat is number && data.lat >= -90 && data.lat <= 90 &&
+      data.lng is number && data.lng >= -180 && data.lng <= 180 &&
+      data.mode in ['In-Person', 'Hybrid', 'Online'] &&
+      data.audience in ['open_to_all', 'host_college_only'] &&
+      data.regStatus in ['open', 'closed'] &&
+      reqStrList(data, 'branches', 0, 30) &&
+      reqStrList(data, 'years', 0, 15) &&
+      data.feeInr is number && data.feeInr >= 0 && data.feeInr <= 1000000 &&
+      data.capacity is number && data.capacity >= 1 && data.capacity <= 100000 &&
+      data.confirmedCount is number && data.confirmedCount >= 0 && data.confirmedCount <= 100000 &&
+      data.waitlistCount is number && data.waitlistCount >= 0 && data.waitlistCount <= 100000 &&
+      reqStr(data, 'regDeadline', 0, 60) &&
+      reqStr(data, 'regLink', 0, 300) &&
+      optStr(data, 'googleFormUrl', 300) &&
+      optStr(data, 'whatsappGroupUrl', 300) &&
+      optStr(data, 'telegramGroupUrl', 300) &&
+      optMap(data, 'paymentInfo') &&
+      optStrList(data, 'rules', 20) &&
+      optStr(data, 'teamSize', 80) &&
+      optStrList(data, 'prizesAndPerks', 20) &&
+      optStrList(data, 'prerequisites', 20) &&
+      optList(data, 'schedule', 14) &&
+      optMap(data, 'coordinatorContact') &&
+      reqStr(data, 'posterUrl', 1, 350000) &&
+      optStrList(data, 'additionalPosterUrls', 8) &&
+      optStr(data, 'promoVideoUrl', 400) &&
+      optStr(data, 'promoVideoCaption', 200) &&
+      data.source in ['organizer', 'seeded', 'student_suggested'] &&
+      optStr(data, 'sourceType', 60) &&
+      optBool(data, 'isSponsored') &&
+      optStr(data, 'sponsorLabel', 80) &&
+      optStr(data, 'submissionFeedback', 400) &&
+      optStr(data, 'submittedById', 128) &&
+      optStr(data, 'submittedByName', 120) &&
+      optStr(data, 'approvedById', 128) &&
+      optStr(data, 'approvedByName', 120) &&
+      optMap(data, 'pendingRevision') &&
+      optBool(data, 'revisionPendingReview') &&
+      optList(data, 'approvalHistory', 30) &&
+      optMap(data, 'aiConfidence') &&
+      data.status in ['draft', 'pending_review', 'changes_requested', 'approved', 'published', 'rejected', 'cancelled'] &&
+      optStr(data, 'changeNotice', 400) &&
+      reqStr(data, 'ownerUid', 1, 128) &&
+      reqStr(data, 'submittedByEmail', 0, 180) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidRegistration(data, regId) {
+      return data.keys().hasAll([
+        'id', 'eventId', 'collegeId', 'userId', 'userName',
+        'passCode', 'qrPayload', 'paymentStatus', 'amountPaidInr',
+        'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'eventId', 'collegeId', 'userId', 'userName', 'userEmail', 'userPhone',
+        'collegeShortName', 'rollNumber', 'branch', 'year', 'participationType',
+        'needsTeammates', 'squadId', 'squadSnapshotId', 'passCode', 'qrPayload',
+        'paymentStatus', 'amountPaidInr', 'paymentMethod', 'paymentRef',
+        'teamName', 'teamMembers', 'pitchNote', 'attendeePhotoUrl', 'emergencyContact',
+        'status', 'checkedInAt', 'checkedInBy', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == regId &&
+      reqStr(data, 'eventId', 1, 128) &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      reqStr(data, 'userId', 1, 128) &&
+      reqStr(data, 'userName', 1, 120) &&
+      optStr(data, 'userEmail', 180) &&
+      optStr(data, 'userPhone', 24) &&
+      optStr(data, 'collegeShortName', 60) &&
+      optStr(data, 'rollNumber', 40) &&
+      optStr(data, 'branch', 80) &&
+      optStr(data, 'year', 40) &&
+      (!('participationType' in data) || data.participationType in ['individual', 'team']) &&
+      optBool(data, 'needsTeammates') &&
+      optStr(data, 'squadId', 128) &&
+      optStr(data, 'squadSnapshotId', 128) &&
+      reqStr(data, 'passCode', 4, 40) &&
+      reqStr(data, 'qrPayload', 4, 300) &&
+      data.paymentStatus in ['free', 'paid_verified', 'pending_verification'] &&
+      data.amountPaidInr is number && data.amountPaidInr >= 0 && data.amountPaidInr <= 1000000 &&
+      (!('paymentMethod' in data) || data.paymentMethod in ['UPI', 'College Portal', 'Free Pass']) &&
+      optStr(data, 'paymentRef', 120) &&
+      optStr(data, 'teamName', 120) &&
+      optStr(data, 'teamMembers', 400) &&
+      optStr(data, 'pitchNote', 400) &&
+      optStr(data, 'attendeePhotoUrl', 80000) &&
+      optStr(data, 'emergencyContact', 40) &&
+      data.status in ['confirmed', 'waitlisted', 'cancelled', 'checked_in'] &&
+      optStr(data, 'checkedInAt', 60) &&
+      optStr(data, 'checkedInBy', 120) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidAnnouncement(data, annId) {
+      return data.keys().hasAll([
+        'id', 'collegeId', 'collegeShortName', 'authorId', 'authorName',
+        'title', 'body', 'pinned', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'collegeId', 'collegeShortName', 'authorId', 'authorName',
+        'authorDesignation', 'title', 'body', 'pinned', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == annId &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      reqStr(data, 'collegeShortName', 1, 60) &&
+      reqStr(data, 'authorId', 1, 128) &&
+      reqStr(data, 'authorName', 1, 120) &&
+      optStr(data, 'authorDesignation', 120) &&
+      reqStr(data, 'title', 1, 140) &&
+      reqStr(data, 'body', 1, 600) &&
+      data.pinned is bool &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidNotification(data, notifId) {
+      return data.keys().hasAll([
+        'id', 'userId', 'senderUid', 'eventId', 'eventTitle', 'kind', 'channel',
+        'title', 'body', 'sendAfter', 'sentAt', 'status', 'dedupeKey', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'userId', 'senderUid', 'recipientUid', 'recipientEmail',
+        'eventId', 'eventTitle', 'kind', 'channel', 'title', 'body',
+        'sendAfter', 'sentAt', 'status', 'dedupeKey', 'createdAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == notifId &&
+      reqStr(data, 'userId', 1, 180) &&
+      reqStr(data, 'senderUid', 1, 128) &&
+      optStr(data, 'recipientUid', 128) &&
+      optStr(data, 'recipientEmail', 180) &&
+      reqStr(data, 'eventId', 1, 128) &&
+      reqStr(data, 'eventTitle', 0, 200) &&
+      data.kind in [
+        'followed_college', 'morning_digest', 'deadline_24h', 'reminder_24h', 'reminder_2h',
+        'event_change', 'waitlist_promoted', 'priority_skill_low_seats',
+        'team_up_call', 'connection_request', 'squad_request', 'squad_confirmed',
+        'submission_approved', 'submission_changes_requested', 'submission_rejected'
+      ] &&
+      data.channel in ['telegram', 'in_app'] &&
+      reqStr(data, 'title', 1, 200) &&
+      reqStr(data, 'body', 1, 800) &&
+      reqStr(data, 'sendAfter', 0, 60) &&
+      (data.sentAt == null || (data.sentAt is string && data.sentAt.size() <= 60)) &&
+      data.status in ['queued', 'sent', 'held_quiet_hours', 'capped_daily', 'muted'] &&
+      reqStr(data, 'dedupeKey', 0, 200) &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidPartnerPost(data, postId) {
+      return data.keys().hasAll([
+        'id', 'eventId', 'eventTitle', 'eventType', 'userId', 'userName',
+        'roleSkill', 'lookingFor', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'eventId', 'eventTitle', 'eventType', 'userId', 'userName',
+        'collegeId', 'collegeShortName', 'branch', 'year', 'skills',
+        'roleSkill', 'lookingFor', 'teamSlotsNeeded', 'note',
+        'whatsappReady', 'discoveryEnabled', 'createdAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == postId &&
+      reqStr(data, 'eventId', 1, 128) &&
+      reqStr(data, 'eventTitle', 0, 200) &&
+      reqStr(data, 'eventType', 0, 40) &&
+      reqStr(data, 'userId', 1, 128) &&
+      reqStr(data, 'userName', 1, 120) &&
+      optStr(data, 'collegeId', 80) &&
+      optStr(data, 'collegeShortName', 60) &&
+      optStr(data, 'branch', 80) &&
+      optStr(data, 'year', 40) &&
+      optList(data, 'skills', 15) &&
+      reqStr(data, 'roleSkill', 1, 100) &&
+      reqStr(data, 'lookingFor', 1, 120) &&
+      optNum(data, 'teamSlotsNeeded', 1, 10) &&
+      optStr(data, 'note', 300) &&
+      optBool(data, 'whatsappReady') &&
+      optBool(data, 'discoveryEnabled') &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidSquad(data, squadId) {
+      return data.keys().hasAll([
+        'id', 'name', 'eventId', 'ownerId', 'targetSize',
+        'recruitmentStatus', 'memberIds', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'name', 'eventId', 'eventTitle', 'eventType', 'ownerId',
+        'targetSize', 'requiredRoles', 'recruitmentStatus', 'isLocked',
+        'whatsappGroupUrl', 'memberIds', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == squadId &&
+      reqStr(data, 'name', 2, 80) &&
+      reqStr(data, 'eventId', 1, 128) &&
+      optStr(data, 'eventTitle', 200) &&
+      optStr(data, 'eventType', 40) &&
+      reqStr(data, 'ownerId', 1, 128) &&
+      data.targetSize is number && data.targetSize >= 2 && data.targetSize <= 10 &&
+      optList(data, 'requiredRoles', 10) &&
+      data.recruitmentStatus in ['open', 'closed', 'locked'] &&
+      optBool(data, 'isLocked') &&
+      optStr(data, 'whatsappGroupUrl', 300) &&
+      data.memberIds is list && data.memberIds.size() >= 1 && data.memberIds.size() <= 10 &&
+      data.ownerId in data.memberIds &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidConnectionRequest(data, requestId) {
+      return data.keys().hasAll([
+        'id', 'eventId', 'fromUserId', 'toUserId', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'eventId', 'eventTitle', 'fromUserId', 'toUserId', 'note',
+        'status', 'conversationId', 'expiresAt', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == requestId &&
+      reqStr(data, 'eventId', 1, 128) &&
+      optStr(data, 'eventTitle', 200) &&
+      reqStr(data, 'fromUserId', 1, 128) &&
+      reqStr(data, 'toUserId', 1, 128) &&
+      data.fromUserId != data.toUserId &&
+      optStr(data, 'note', 300) &&
+      data.status in ['pending', 'accepted', 'declined', 'expired'] &&
+      optStr(data, 'conversationId', 128) &&
+      (!('expiresAt' in data) || data.expiresAt is timestamp) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidJoinRequest(data, requestId) {
+      return data.keys().hasAll([
+        'id', 'squadId', 'squadOwnerId', 'applicantId', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'squadId', 'squadOwnerId', 'eventId', 'applicantId',
+        'roleApplied', 'note', 'status', 'expiresAt', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == requestId &&
+      reqStr(data, 'squadId', 1, 128) &&
+      reqStr(data, 'squadOwnerId', 1, 128) &&
+      optStr(data, 'eventId', 128) &&
+      reqStr(data, 'applicantId', 1, 128) &&
+      data.applicantId != data.squadOwnerId &&
+      optStr(data, 'roleApplied', 80) &&
+      optStr(data, 'note', 300) &&
+      data.status in ['pending', 'approved', 'declined', 'expired'] &&
+      (!('expiresAt' in data) || data.expiresAt is timestamp) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidTeamUpCall(data, callId) {
+      return data.keys().hasAll([
+        'id', 'eventId', 'creatorId', 'teammatesNeeded', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'eventId', 'eventIds', 'events', 'creatorId', 'teammatesNeeded', 'preferredCollege',
+        'preferredYear', 'preferredSkills', 'rolesNeeded', 'preferredAreas', 'preferredLanguages',
+        'genderPreference', 'audienceMode', 'note', 'eligibleCount', 'recipientUserIds',
+        'status', 'expiresAt', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == callId &&
+      reqStr(data, 'eventId', 1, 128) &&
+      (!('eventIds' in data) || reqStrList(data, 'eventIds', 1, 3)) &&
+      optList(data, 'events', 3) &&
+      reqStr(data, 'creatorId', 1, 128) &&
+      data.teammatesNeeded is number && data.teammatesNeeded >= 1 && data.teammatesNeeded <= 8 &&
+      optStr(data, 'preferredCollege', 80) &&
+      optStr(data, 'preferredYear', 40) &&
+      optList(data, 'preferredSkills', 10) &&
+      optList(data, 'rolesNeeded', 10) &&
+      optStrList(data, 'preferredAreas', 16) &&
+      (!('preferredLanguages' in data) || (
+        data.preferredLanguages is list &&
+        data.preferredLanguages.size() <= 10 &&
+        data.preferredLanguages.hasOnly(['English', 'Hindi', 'Telugu', 'Tamil', 'Kannada', 'Malayalam', 'Marathi', 'Bengali', 'Urdu', 'Other'])
+      )) &&
+      (!('genderPreference' in data) || data.genderPreference in ['any', 'woman', 'man', 'non_binary']) &&
+      (!('audienceMode' in data) || data.audienceMode in ['active_only', 'all_matching']) &&
+      optStr(data, 'note', 300) &&
+      optNum(data, 'eligibleCount', 0, 1000) &&
+      optList(data, 'recipientUserIds', 50) &&
+      data.status in ['active', 'closed', 'expired'] &&
+      (!('expiresAt' in data) || data.expiresAt is timestamp) &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidConversation(data, conversationId) {
+      return data.keys().hasAll([
+        'id', 'eventId', 'participantIds', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'eventId', 'participantIds', 'confirmedByUserIds', 'status', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == conversationId &&
+      reqStr(data, 'eventId', 1, 128) &&
+      data.participantIds is list && data.participantIds.size() == 2 &&
+      optList(data, 'confirmedByUserIds', 2) &&
+      data.status in ['active', 'confirmed_to_squad', 'archived'] &&
+      data.createdAt is timestamp &&
+      data.updatedAt is timestamp;
+    }
+
+    function isValidChatMessage(data, messageId) {
+      return data.keys().hasAll([
+        'id', 'roomId', 'roomScope', 'senderId', 'kind', 'body', 'participantIds', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'roomId', 'roomScope', 'senderId', 'senderName', 'kind', 'body', 'participantIds', 'createdAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == messageId &&
+      reqStr(data, 'roomId', 1, 128) &&
+      data.roomScope in ['conversation', 'squad'] &&
+      reqStr(data, 'senderId', 1, 128) &&
+      optStr(data, 'senderName', 120) &&
+      data.kind in ['text', 'whatsapp_contact', 'whatsapp_group', 'system'] &&
+      reqStr(data, 'body', 1, 1000) &&
+      data.participantIds is list && data.participantIds.size() >= 1 && data.participantIds.size() <= 10 &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidRegistrationSnapshot(data, snapshotId) {
+      return data.keys().hasAll([
+        'id', 'squadId', 'eventId', 'submittedByUserId', 'memberIds', 'status', 'rosterHash', 'submittedAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'squadId', 'eventId', 'submittedByUserId', 'memberIds', 'status', 'rosterHash', 'submittedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == snapshotId &&
+      reqStr(data, 'squadId', 1, 128) &&
+      reqStr(data, 'eventId', 1, 128) &&
+      reqStr(data, 'submittedByUserId', 1, 128) &&
+      data.memberIds is list && data.memberIds.size() >= 1 && data.memberIds.size() <= 10 &&
+      data.status in ['submitted', 'needs_update', 'amended'] &&
+      reqStr(data, 'rosterHash', 1, 200) &&
+      data.submittedAt is timestamp;
+    }
+
+    function isValidEventFeedback(data, fbId) {
+      return data.keys().hasAll([
+        'id', 'eventId', 'collegeId', 'clubId', 'userId', 'isAnonymous', 'rating', 'comment', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'eventId', 'eventTitle', 'eventType', 'collegeId', 'clubId', 'clubName',
+        'userId', 'authorName', 'isAnonymous', 'rating', 'requestedCategory',
+        'comment', 'suggestion', 'complaint', 'createdAt', 'updatedAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == fbId &&
+      reqStr(data, 'eventId', 1, 128) &&
+      optStr(data, 'eventTitle', 200) &&
+      (!('eventType' in data) || data.eventType in ['Hackathon', 'Workshop', 'Talk', 'Cultural', 'Competition', 'Meetup']) &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      reqStr(data, 'clubId', 1, 128) &&
+      optStr(data, 'clubName', 140) &&
+      reqStr(data, 'userId', 1, 128) &&
+      optStr(data, 'authorName', 120) &&
+      data.isAnonymous is bool &&
+      data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+      optStr(data, 'requestedCategory', 60) &&
+      reqStr(data, 'comment', 1, 600) &&
+      optStr(data, 'suggestion', 400) &&
+      optStr(data, 'complaint', 400) &&
+      data.createdAt is timestamp &&
+      optStr(data, 'updatedAt', 60);
+    }
+
+    function isValidCampusSurvey(data, srvId) {
+      return data.keys().hasAll([
+        'id', 'collegeId', 'createdById', 'title', 'questionPrompt', 'status', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'collegeId', 'collegeShortName', 'createdById', 'createdByName',
+        'title', 'description', 'questionPrompt', 'allowAnonymous', 'options', 'status', 'createdAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == srvId &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      optStr(data, 'collegeShortName', 60) &&
+      reqStr(data, 'createdById', 1, 128) &&
+      optStr(data, 'createdByName', 120) &&
+      reqStr(data, 'title', 1, 140) &&
+      optStr(data, 'description', 400) &&
+      reqStr(data, 'questionPrompt', 1, 300) &&
+      optBool(data, 'allowAnonymous') &&
+      optStrList(data, 'options', 8) &&
+      data.status in ['active', 'closed'] &&
+      data.createdAt is timestamp;
+    }
+
+    function isValidSurveyResponse(data, respId) {
+      return data.keys().hasAll([
+        'id', 'surveyId', 'collegeId', 'userId', 'isAnonymous', 'createdAt'
+      ]) &&
+      data.keys().hasOnly([
+        'id', 'surveyId', 'collegeId', 'userId', 'respondentName',
+        'isAnonymous', 'rating', 'selectedOption', 'responseText', 'createdAt'
+      ]) &&
+      reqStr(data, 'id', 1, 128) && data.id == respId &&
+      reqStr(data, 'surveyId', 1, 128) &&
+      reqStr(data, 'collegeId', 1, 80) &&
+      reqStr(data, 'userId', 1, 128) &&
+      optStr(data, 'respondentName', 120) &&
+      data.isAnonymous is bool &&
+      optNum(data, 'rating', 1, 5) &&
+      optStr(data, 'selectedOption', 120) &&
+      optStr(data, 'responseText', 600) &&
+      data.createdAt is timestamp;
+    }
+
+    // Boot connection check document (no PII)
+    match /test/connection {
+      allow get: if true;
+    }
+
+    match /betaConfig/{configId} {
+      allow get: if isValidId(configId) && isSignedIn();
+      allow list: if isBetaManager();
+      allow create: if isValidId(configId) &&
+        isBetaManager() &&
+        isValidBetaConfig(incoming(), configId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(configId) &&
+        isBetaManager() &&
+        isValidBetaConfig(incoming(), configId) &&
+        incoming().id == existing().id &&
+        incoming().managerEmail == 'nvipuj@gmail.com' &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['enabled', 'maxSeats', 'managerEmail', 'updatedAt']);
+      allow delete: if false;
+    }
+
+    match /betaSeats/{seatId} {
+      allow get: if isValidId(seatId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.email == request.auth.token.email.lower()
+      );
+      allow list: if isBetaManager();
+      allow create: if isValidId(seatId) &&
+        isSignedIn() &&
+        isValidBetaSeat(incoming(), seatId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (
+          isBetaManager() ||
+          (
+            incoming().email == request.auth.token.email.lower() &&
+            incoming().role == 'student' &&
+            incoming().status == 'active' &&
+            'invitedByCode' in incoming() &&
+            isValidId(incoming().invitedByCode) &&
+            exists(/databases/$(database)/documents/betaInviteCodes/$(request.resource.data.invitedByCode)) &&
+            !('usedAt' in get(/databases/$(database)/documents/betaInviteCodes/$(request.resource.data.invitedByCode)).data)
+          )
+        );
+      allow update: if isValidId(seatId) &&
+        isBetaManager() &&
+        isValidBetaSeat(incoming(), seatId) &&
+        incoming().seatId == existing().seatId &&
+        incoming().email == existing().email &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['role', 'status', 'updatedAt']);
+      allow delete: if isValidId(seatId) && isBetaManager();
+    }
+
+    match /betaInviteCodes/{codeId} {
+      allow get: if isValidId(codeId) && isSignedIn();
+      allow list: if isBetaManager();
+      allow create: if isValidId(codeId) &&
+        isBetaManager() &&
+        isValidBetaInviteCode(incoming(), codeId) &&
+        !('usedAt' in incoming()) &&
+        !('usedByEmail' in incoming()) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(codeId) &&
+        isSignedIn() &&
+        isValidBetaInviteCode(incoming(), codeId) &&
+        incoming().code == existing().code &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            isBetaManager() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['label', 'usedByEmail', 'usedAt', 'updatedAt'])
+          ) ||
+          (
+            !('usedAt' in existing()) &&
+            incoming().usedAt == request.time &&
+            incoming().usedByEmail == request.auth.token.email.lower() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['usedByEmail', 'usedAt', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(codeId) && isBetaManager();
+    }
+
+    match /studentProfiles/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isBetaManager());
+      allow list: if isBetaManager();
+      allow create: if isValidId(userId) &&
+        isOwner(userId) &&
+        isValidStudentProfile(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(userId) &&
+        isValidStudentProfile(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().role == existing().role &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (isBetaManager() || isOwner(userId)) &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'displayName', 'email', 'phoneNumber', 'photoUrl', 'course', 'branch', 'semester', 'year',
+          'collegeId', 'customCollegeName', 'collegePlaceId', 'collegeAddress', 'collegeLat', 'collegeLng',
+          'collegeVerified', 'areaId', 'locationLabel', 'locationLat', 'locationLng', 'radiusKm',
+          'interests', 'followedCollegeIds', 'savedEventIds', 'onboardingCompleted', 'consentAccepted',
+          'skills', 'learningGoals', 'headline', 'bio', 'graduationYear', 'rollNumber',
+          'linkedinUrl', 'githubUrl', 'portfolioUrl', 'leetcodeUrl', 'hackerrankUrl', 'instagramUrl',
+          'preferredModes', 'availability', 'priorityLowSeatAlerts',
+          'teamDiscoveryEnabled', 'teamCallNotifications', 'gender', 'languages',
+          'mutedAll', 'telegramConnected', 'telegramHandle', 'telegramChatId', 'quietHours', 'profileVisibility', 'accessibilityPrefs',
+          'updatedAt'
+        ]);
+      allow delete: if isValidId(userId) && (isOwner(userId) || isBetaManager());
+    }
+
+    match /organizerApplications/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isBetaManager());
+      allow list: if isBetaManager();
+      allow create: if isValidId(userId) &&
+        isOwner(userId) &&
+        isValidOrganizerApplication(incoming(), userId) &&
+        incoming().status == 'pending' &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(userId) &&
+        isValidOrganizerApplication(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            isBetaManager() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          ) ||
+          (
+            isOwner(userId) &&
+            existing().status == 'pending' &&
+            incoming().status == 'pending' &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'clubName', 'contactName', 'designation', 'officialEmail', 'facultyEmail',
+              'collegeId', 'domainMatched', 'proofNote', 'updatedAt'
+            ])
+          )
+        );
+      allow delete: if isValidId(userId) && isBetaManager();
+    }
+
+    match /officialMemberships/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isBetaManager());
+      allow list: if isBetaManager() || (
+        isSignedIn() && (
+          resource.data.uid == request.auth.uid ||
+          resource.data.invitedByUid == request.auth.uid
+        )
+      );
+      allow create: if isValidId(userId) &&
+        isValidOfficialMembership(incoming(), userId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (
+          isBetaManager() ||
+          (
+            isOwner(userId) &&
+            request.auth.token.email.lower() == 'janumpallyvinaychandra@gmail.com' &&
+            incoming().collegeId == 'col-iiith' &&
+            incoming().memberRole == 'club_leader' &&
+            incoming().status == 'approved'
+          ) ||
+          (
+            isOwner(userId) &&
+            incoming().memberRole == 'club_leader' &&
+            incoming().status == 'approved' &&
+            'inviteToken' in incoming() &&
+            isValidId(incoming().inviteToken) &&
+            exists(/databases/$(database)/documents/officialInvites/$(request.resource.data.inviteToken)) &&
+            get(/databases/$(database)/documents/officialInvites/$(request.resource.data.inviteToken)).data.status == 'active' &&
+            get(/databases/$(database)/documents/officialInvites/$(request.resource.data.inviteToken)).data.collegeId == incoming().collegeId &&
+            get(/databases/$(database)/documents/officialInvites/$(request.resource.data.inviteToken)).data.usedCount < get(/databases/$(database)/documents/officialInvites/$(request.resource.data.inviteToken)).data.maxUses
+          )
+        );
+      allow update: if isValidId(userId) &&
+        isValidOfficialMembership(incoming(), userId) &&
+        incoming().uid == existing().uid &&
+        incoming().collegeId == existing().collegeId &&
+        incoming().memberRole == existing().memberRole &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            isBetaManager() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['clubName', 'contactName', 'designation', 'status', 'updatedAt'])
+          ) ||
+          (
+            isApprovedCollegeOfficial(existing().collegeId) &&
+            existing().memberRole == 'club_leader' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          ) ||
+          (
+            isOwner(userId) &&
+            existing().status == 'approved' &&
+            incoming().status == 'approved' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['clubName', 'contactName', 'designation', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(userId) && (
+        isBetaManager() ||
+        (isOwner(userId) && existing().email == 'vipujgaming@gmail.com')
+      );
+    }
+
+    match /officialInvites/{tokenId} {
+      allow get: if isValidId(tokenId) && isSignedIn();
+      allow list: if isBetaManager() || (isSignedIn() && resource.data.createdByUid == request.auth.uid);
+      allow create: if isValidId(tokenId) &&
+        isValidOfficialInvite(incoming(), tokenId) &&
+        incoming().createdByUid == request.auth.uid &&
+        incoming().status == 'active' &&
+        incoming().usedCount == 0 &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (isBetaManager() || isApprovedCollegeOfficial(incoming().collegeId));
+      allow update: if isValidId(tokenId) &&
+        isValidOfficialInvite(incoming(), tokenId) &&
+        incoming().token == existing().token &&
+        incoming().code == existing().code &&
+        incoming().collegeId == existing().collegeId &&
+        incoming().createdByUid == existing().createdByUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            isBetaManager() &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'usedCount', 'updatedAt'])
+          ) ||
+          (
+            isApprovedCollegeOfficial(existing().collegeId) &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          ) ||
+          (
+            isSignedIn() &&
+            existing().status == 'active' &&
+            existing().usedCount < existing().maxUses &&
+            incoming().usedCount == existing().usedCount + 1 &&
+            incoming().status in ['active', 'used'] &&
+            (!('targetEmail' in existing()) || existing().targetEmail == '' || existing().targetEmail == request.auth.token.email) &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['usedCount', 'status', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(tokenId) && isBetaManager();
+    }
+
+    match /events/{eventId} {
+      allow get: if isValidId(eventId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.status in ['published', 'cancelled'] ||
+        resource.data.ownerUid == request.auth.uid ||
+        isApprovedCollegeOfficial(resource.data.collegeId)
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.status in ['published', 'cancelled'] ||
+        resource.data.ownerUid == request.auth.uid
+      );
+      allow create: if isValidId(eventId) &&
+        isSignedIn() &&
+        isValidCampusEvent(incoming(), eventId) &&
+        incoming().ownerUid == request.auth.uid &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (
+          isBetaManager() ||
+          isApprovedCollegeOfficial(incoming().collegeId) ||
+          (isApprovedClubLeader(incoming().collegeId) && incoming().status in ['draft', 'pending_review'])
+        );
+      allow update: if isValidId(eventId) &&
+        isSignedIn() &&
+        isValidCampusEvent(incoming(), eventId) &&
+        incoming().id == existing().id &&
+        incoming().clubId == existing().clubId &&
+        incoming().collegeId == existing().collegeId &&
+        incoming().ownerUid == existing().ownerUid &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            (isBetaManager() || isApprovedCollegeOfficial(existing().collegeId)) &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'title', 'description', 'type', 'startAt', 'endAt', 'venueName', 'areaId',
+              'placeId', 'formattedAddress', 'lat', 'lng', 'mode', 'audience', 'regStatus',
+              'branches', 'years', 'feeInr', 'capacity', 'confirmedCount', 'waitlistCount',
+              'regDeadline', 'regLink', 'googleFormUrl', 'whatsappGroupUrl', 'telegramGroupUrl',
+              'paymentInfo', 'rules', 'teamSize', 'prizesAndPerks', 'prerequisites', 'coordinatorContact',
+              'posterUrl', 'additionalPosterUrls', 'promoVideoUrl', 'promoVideoCaption', 'sourceType', 'isSponsored', 'sponsorLabel',
+              'submissionFeedback', 'approvedById', 'approvedByName', 'pendingRevision',
+              'revisionPendingReview', 'approvalHistory', 'status', 'changeNotice', 'updatedAt'
+            ])
+          ) ||
+          (
+            isApprovedClubLeader(existing().collegeId) &&
+            existing().ownerUid == request.auth.uid &&
+            incoming().status in ['draft', 'pending_review', 'changes_requested', 'published'] &&
+            (incoming().status != 'published' || existing().status == 'published') &&
+            incoming().diff(existing()).affectedKeys().hasOnly([
+              'title', 'description', 'type', 'startAt', 'endAt', 'venueName', 'areaId',
+              'placeId', 'formattedAddress', 'lat', 'lng', 'mode', 'audience', 'regStatus',
+              'branches', 'years', 'feeInr', 'capacity', 'regDeadline', 'regLink',
+              'googleFormUrl', 'whatsappGroupUrl', 'telegramGroupUrl', 'paymentInfo',
+              'rules', 'teamSize', 'prizesAndPerks', 'prerequisites', 'coordinatorContact',
+              'posterUrl', 'additionalPosterUrls', 'promoVideoUrl', 'promoVideoCaption', 'submissionFeedback',
+              'pendingRevision', 'revisionPendingReview', 'approvalHistory', 'status', 'changeNotice', 'updatedAt'
+            ])
+          ) ||
+          (
+            existing().status == 'published' &&
+            incoming().status == 'published' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['confirmedCount', 'waitlistCount', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(eventId) && isBetaManager();
+    }
+
+    match /registrations/{regId} {
+      allow get: if isValidId(regId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.userId == request.auth.uid ||
+        isApprovedCollegeOfficial(resource.data.collegeId)
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.userId == request.auth.uid
+      );
+      allow create: if isValidId(regId) &&
+        isSignedIn() &&
+        incoming().userId == request.auth.uid &&
+        isValidRegistration(incoming(), regId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(regId) &&
+        isSignedIn() &&
+        isValidRegistration(incoming(), regId) &&
+        incoming().id == existing().id &&
+        incoming().eventId == existing().eventId &&
+        incoming().collegeId == existing().collegeId &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            (isBetaManager() || isApprovedCollegeOfficial(existing().collegeId) || isApprovedClubLeader(existing().collegeId)) &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'paymentStatus', 'amountPaidInr', 'paymentMethod', 'paymentRef', 'checkedInAt', 'checkedInBy', 'updatedAt'])
+          ) ||
+          (
+            existing().userId == request.auth.uid &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(regId) && (isBetaManager() || (isSignedIn() && existing().userId == request.auth.uid));
+    }
+
+    match /announcements/{annId} {
+      allow get: if isValidId(annId) && isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isValidId(annId) &&
+        isSignedIn() &&
+        isValidAnnouncement(incoming(), annId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time &&
+        (isBetaManager() || isApprovedCollegeOfficial(incoming().collegeId));
+      allow update: if isValidId(annId) &&
+        isSignedIn() &&
+        isValidAnnouncement(incoming(), annId) &&
+        incoming().id == existing().id &&
+        incoming().collegeId == existing().collegeId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (isBetaManager() || isApprovedCollegeOfficial(existing().collegeId)) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['title', 'body', 'pinned', 'updatedAt']);
+      allow delete: if isValidId(annId) && isSignedIn() && (isBetaManager() || isApprovedCollegeOfficial(existing().collegeId));
+    }
+
+    match /notifications/{notifId} {
+      allow get: if isValidId(notifId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.recipientUid == request.auth.uid ||
+        resource.data.recipientEmail == request.auth.token.email.lower() ||
+        resource.data.senderUid == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.recipientUid == request.auth.uid ||
+        resource.data.recipientEmail == request.auth.token.email.lower() ||
+        resource.data.senderUid == request.auth.uid
+      );
+      allow create: if isValidId(notifId) &&
+        isSignedIn() &&
+        incoming().senderUid == request.auth.uid &&
+        isValidNotification(incoming(), notifId) &&
+        incoming().createdAt == request.time;
+      allow update, delete: if isValidId(notifId) && isBetaManager();
+    }
+
+    match /partnerPosts/{postId} {
+      allow get: if isValidId(postId) && isSignedIn();
+      allow list: if isSignedIn();
+      allow create: if isValidId(postId) &&
+        isSignedIn() &&
+        incoming().userId == request.auth.uid &&
+        isValidPartnerPost(incoming(), postId) &&
+        incoming().createdAt == request.time;
+      allow update: if isValidId(postId) &&
+        isSignedIn() &&
+        existing().userId == request.auth.uid &&
+        incoming().userId == existing().userId &&
+        incoming().createdAt == existing().createdAt &&
+        isValidPartnerPost(incoming(), postId) &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'eventTitle', 'eventType', 'collegeId', 'collegeShortName', 'branch', 'year',
+          'skills', 'roleSkill', 'lookingFor', 'teamSlotsNeeded', 'note',
+          'whatsappReady', 'discoveryEnabled'
+        ]);
+      allow delete: if isValidId(postId) && isSignedIn() && (existing().userId == request.auth.uid || isBetaManager());
+    }
+
+    match /squads/{squadId} {
+      allow get: if isValidId(squadId) && isSignedIn() && (resource == null || isBetaManager() || request.auth.uid in resource.data.memberIds);
+      allow list: if isSignedIn() && (isBetaManager() || request.auth.uid in resource.data.memberIds);
+      allow create: if isValidId(squadId) &&
+        isSignedIn() &&
+        incoming().ownerId == request.auth.uid &&
+        isValidSquad(incoming(), squadId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(squadId) &&
+        isSignedIn() &&
+        isValidSquad(incoming(), squadId) &&
+        incoming().id == existing().id &&
+        incoming().eventId == existing().eventId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            (isBetaManager() || existing().ownerId == request.auth.uid) &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['name', 'targetSize', 'requiredRoles', 'recruitmentStatus', 'isLocked', 'whatsappGroupUrl', 'memberIds', 'ownerId', 'updatedAt'])
+          ) ||
+          (
+            request.auth.uid in existing().memberIds &&
+            incoming().ownerId == existing().ownerId &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['whatsappGroupUrl', 'memberIds', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(squadId) && isSignedIn() && (existing().ownerId == request.auth.uid || isBetaManager());
+    }
+
+    match /connectionRequests/{requestId} {
+      allow get: if isValidId(requestId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.fromUserId == request.auth.uid ||
+        resource.data.toUserId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.fromUserId == request.auth.uid ||
+        resource.data.toUserId == request.auth.uid
+      );
+      allow create: if isValidId(requestId) &&
+        isSignedIn() &&
+        incoming().fromUserId == request.auth.uid &&
+        incoming().status == 'pending' &&
+        isValidConnectionRequest(incoming(), requestId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(requestId) &&
+        isSignedIn() &&
+        isValidConnectionRequest(incoming(), requestId) &&
+        incoming().id == existing().id &&
+        incoming().fromUserId == existing().fromUserId &&
+        incoming().toUserId == existing().toUserId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (
+          (
+            (isBetaManager() || existing().toUserId == request.auth.uid) &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'conversationId', 'updatedAt'])
+          ) ||
+          (
+            existing().fromUserId == request.auth.uid &&
+            incoming().status == 'expired' &&
+            incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt'])
+          )
+        );
+      allow delete: if isValidId(requestId) && isBetaManager();
+    }
+
+    match /joinRequests/{requestId} {
+      allow get: if isValidId(requestId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.applicantId == request.auth.uid ||
+        resource.data.squadOwnerId == request.auth.uid
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.applicantId == request.auth.uid ||
+        resource.data.squadOwnerId == request.auth.uid
+      );
+      allow create: if isValidId(requestId) &&
+        isSignedIn() &&
+        incoming().applicantId == request.auth.uid &&
+        incoming().status == 'pending' &&
+        isValidJoinRequest(incoming(), requestId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(requestId) &&
+        isSignedIn() &&
+        isValidJoinRequest(incoming(), requestId) &&
+        incoming().id == existing().id &&
+        incoming().squadId == existing().squadId &&
+        incoming().squadOwnerId == existing().squadOwnerId &&
+        incoming().applicantId == existing().applicantId &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (isBetaManager() || existing().squadOwnerId == request.auth.uid) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']);
+      allow delete: if isValidId(requestId) && isBetaManager();
+    }
+
+    match /teamUpCalls/{callId} {
+      allow get: if isValidId(callId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.creatorId == request.auth.uid ||
+        ('recipientUserIds' in resource.data && request.auth.uid in resource.data.recipientUserIds)
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.creatorId == request.auth.uid ||
+        ('recipientUserIds' in resource.data && request.auth.uid in resource.data.recipientUserIds)
+      );
+      allow create: if isValidId(callId) &&
+        isSignedIn() &&
+        incoming().creatorId == request.auth.uid &&
+        incoming().status == 'active' &&
+        isValidTeamUpCall(incoming(), callId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(callId) &&
+        isSignedIn() &&
+        isValidTeamUpCall(incoming(), callId) &&
+        incoming().id == existing().id &&
+        incoming().creatorId == existing().creatorId &&
+        incoming().eventId == existing().eventId &&
+        (!('eventIds' in existing()) || incoming().eventIds == existing().eventIds) &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        (isBetaManager() || existing().creatorId == request.auth.uid) &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'eventIds', 'events', 'teammatesNeeded', 'preferredCollege', 'preferredYear', 'preferredSkills',
+          'rolesNeeded', 'preferredAreas', 'preferredLanguages', 'genderPreference',
+          'audienceMode', 'note', 'eligibleCount', 'recipientUserIds',
+          'status', 'expiresAt', 'updatedAt'
+        ]);
+      allow delete: if isValidId(callId) && isSignedIn() && (existing().creatorId == request.auth.uid || isBetaManager());
+    }
+
+    match /conversations/{conversationId} {
+      allow get: if isValidId(conversationId) && isSignedIn() && (resource == null || isBetaManager() || request.auth.uid in resource.data.participantIds);
+      allow list: if isSignedIn() && (isBetaManager() || request.auth.uid in resource.data.participantIds);
+      allow create: if isValidId(conversationId) &&
+        isSignedIn() &&
+        request.auth.uid in incoming().participantIds &&
+        isValidConversation(incoming(), conversationId) &&
+        incoming().createdAt == request.time &&
+        incoming().updatedAt == request.time;
+      allow update: if isValidId(conversationId) &&
+        isSignedIn() &&
+        (isBetaManager() || request.auth.uid in existing().participantIds) &&
+        isValidConversation(incoming(), conversationId) &&
+        incoming().id == existing().id &&
+        incoming().eventId == existing().eventId &&
+        incoming().participantIds == existing().participantIds &&
+        incoming().createdAt == existing().createdAt &&
+        incoming().updatedAt == request.time &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['confirmedByUserIds', 'status', 'updatedAt']);
+      allow delete: if isValidId(conversationId) && isBetaManager();
+    }
+
+    match /chatMessages/{messageId} {
+      allow get: if isValidId(messageId) && isSignedIn() && (resource == null || isBetaManager() || request.auth.uid in resource.data.participantIds);
+      allow list: if isSignedIn() && (isBetaManager() || request.auth.uid in resource.data.participantIds);
+      allow create: if isValidId(messageId) &&
+        isSignedIn() &&
+        incoming().senderId == request.auth.uid &&
+        request.auth.uid in incoming().participantIds &&
+        isValidChatMessage(incoming(), messageId) &&
+        incoming().createdAt == request.time;
+      allow update, delete: if isValidId(messageId) && isBetaManager();
+    }
+
+    match /registrationSnapshots/{snapshotId} {
+      allow get: if isValidId(snapshotId) && isSignedIn() && (resource == null || isBetaManager() || request.auth.uid in resource.data.memberIds);
+      allow list: if isSignedIn() && (isBetaManager() || request.auth.uid in resource.data.memberIds);
+      allow create: if isValidId(snapshotId) &&
+        isSignedIn() &&
+        request.auth.uid in incoming().memberIds &&
+        isValidRegistrationSnapshot(incoming(), snapshotId) &&
+        incoming().submittedAt == request.time;
+      allow update: if isValidId(snapshotId) &&
+        isSignedIn() &&
+        (isBetaManager() || request.auth.uid in existing().memberIds) &&
+        isValidRegistrationSnapshot(incoming(), snapshotId) &&
+        incoming().id == existing().id &&
+        incoming().squadId == existing().squadId &&
+        incoming().eventId == existing().eventId &&
+        incoming().submittedAt == existing().submittedAt &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['memberIds', 'status', 'rosterHash']);
+      allow delete: if isValidId(snapshotId) && isBetaManager();
+    }
+
+    match /eventFeedback/{feedbackId} {
+      allow get: if isValidId(feedbackId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.userId == request.auth.uid ||
+        isApprovedCollegeOfficial(resource.data.collegeId)
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.userId == request.auth.uid
+      );
+      allow create: if isValidId(feedbackId) &&
+        isSignedIn() &&
+        incoming().userId == request.auth.uid &&
+        isValidEventFeedback(incoming(), feedbackId) &&
+        incoming().createdAt == request.time;
+      allow update: if isValidId(feedbackId) &&
+        isSignedIn() &&
+        existing().userId == request.auth.uid &&
+        incoming().userId == existing().userId &&
+        incoming().eventId == existing().eventId &&
+        incoming().createdAt == existing().createdAt &&
+        isValidEventFeedback(incoming(), feedbackId);
+      allow delete: if isValidId(feedbackId) && (isBetaManager() || existing().userId == request.auth.uid);
+    }
+
+    match /surveys/{surveyId} {
+      allow get, list: if isSignedIn();
+      allow create: if isValidId(surveyId) &&
+        isSignedIn() &&
+        isValidCampusSurvey(incoming(), surveyId) &&
+        incoming().createdAt == request.time &&
+        (isBetaManager() || isApprovedCollegeOfficial(incoming().collegeId));
+      allow update: if isValidId(surveyId) &&
+        isSignedIn() &&
+        isValidCampusSurvey(incoming(), surveyId) &&
+        incoming().id == existing().id &&
+        incoming().collegeId == existing().collegeId &&
+        incoming().createdAt == existing().createdAt &&
+        (isBetaManager() || isApprovedCollegeOfficial(existing().collegeId)) &&
+        incoming().diff(existing()).affectedKeys().hasOnly([
+          'title', 'description', 'questionPrompt', 'allowAnonymous', 'options', 'status'
+        ]);
+      allow delete: if isValidId(surveyId) && (isBetaManager() || isApprovedCollegeOfficial(existing().collegeId));
+    }
+
+    match /surveyResponses/{responseId} {
+      allow get: if isValidId(responseId) && isSignedIn() && (
+        resource == null ||
+        isBetaManager() ||
+        resource.data.userId == request.auth.uid ||
+        isApprovedCollegeOfficial(resource.data.collegeId)
+      );
+      allow list: if isSignedIn() && (
+        isBetaManager() ||
+        resource.data.userId == request.auth.uid
+      );
+      allow create: if isValidId(responseId) &&
+        isSignedIn() &&
+        incoming().userId == request.auth.uid &&
+        isValidSurveyResponse(incoming(), responseId) &&
+        incoming().createdAt == request.time;
+      allow update: if isValidId(responseId) &&
+        isSignedIn() &&
+        existing().userId == request.auth.uid &&
+        incoming().userId == existing().userId &&
+        incoming().surveyId == existing().surveyId &&
+        incoming().createdAt == existing().createdAt &&
+        isValidSurveyResponse(incoming(), responseId);
+      allow delete: if isValidId(responseId) && (isBetaManager() || existing().userId == request.auth.uid);
+    }
+  }
+}
